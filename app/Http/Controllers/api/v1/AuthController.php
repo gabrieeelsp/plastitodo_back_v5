@@ -18,7 +18,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->get('name'),
             'email' => $request->get('email'),
-            'password' => Hash::make($request('password')),
+            'password' => Hash::make($request->get('password')),
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -60,6 +60,7 @@ class AuthController extends Controller
         return [
             "email" => $request->user()->email,
             "name" => $request->user()->name,
+            "role" => $request->user()->role
         ];
         
     }

@@ -21,6 +21,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+
+        'direccion',
+        'docnumber',
+        'ivacondition_id',
+        'doctype_id'
     ];
 
     /**
@@ -41,4 +46,29 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function ivacondition() 
+    {
+        return $this->belongsTo(Ivacondition::class);
+    }
+
+    public function doctype() 
+    {
+        return $this->belongsTo(Doctype::class);
+    }
+
+    public function modelofact()
+    {
+        return $this->belongsTo(Modelofact::class);
+    }
+
+    public function is_enable_afip()
+    {
+        if(!$this->ivacondition){ return false; }
+        if(!$this->doctype){ return false; }
+        if(!$this->docnumber){ return false; }
+        if(!$this->direccion){ return false; }
+
+        return true;
+    }
 }
