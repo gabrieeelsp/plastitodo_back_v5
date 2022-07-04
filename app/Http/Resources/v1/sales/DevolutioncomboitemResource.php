@@ -24,6 +24,11 @@ class DevolutioncomboitemResource extends JsonResource
             ],
             'relationships' => [
                 'devolutioncombosaleproducts' => DevolutioncombosaleproductResource::collection($this->devolutioncombosaleproducts),
+                'ivaaliquot' => [
+                    'id' => $this->salecomboitem->ivaaliquot_id,
+                    'name' => $this->salecomboitem->ivaaliquot->name,
+                    'valor' => $this->salecomboitem->ivaaliquot->valor
+                ],
             ]
         ];
     }

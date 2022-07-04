@@ -26,12 +26,30 @@ class ComprobanteSaleResource extends JsonResource
                 'tipo' => $this->modelofact->name,
                 'id_afip_tipo' => $this->id_afip_tipo,
                 'created_at' => date('d / m / Y', $this->created_at->timestamp),
+
+                'nombre_empresa' => $this->nombre_empresa,                
+                'razon_social_empresa' => $this->razon_social_empresa,
+                'domicilio_comercial_empresa' => $this->domicilio_comercial_empresa,
+                'ivacondition_name_empresa' => $this->ivacondition_name_empresa,
+                'cuit_empresa' => $this->cuit_empresa,
+                'ing_brutos_empresa' => $this->ing_brutos_empresa,
+                'fecha_inicio_act_empresa' => $this->fecha_inicio_act_empresa,                
+
+                'nombre_client' => $this->nombre_client,
+                'domicilio_client' => $this->domicilio_client,
+                'ivacondition_name_client' => $this->ivacondition_name_client,
+                'condicion_venta' => $this->condicion_venta,
+                'docnumber_client' => $this->docnumber,
+                'doctype_name_client' => $this->doctype_name,
+                'doctype_id_afip_client' => $this->doctype_id_afip
+                
             ],
             'relationships' => [
                 'modelofact' => [
                     'id' => $this->modelofact->id,
-                    'name' => $this->modelofact->name
-                ]
+                    'name' => $this->modelofact->name,
+                ],
+                
             ]       
             
         ]; 

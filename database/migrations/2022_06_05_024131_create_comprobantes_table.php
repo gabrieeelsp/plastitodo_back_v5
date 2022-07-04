@@ -27,12 +27,27 @@ class CreateComprobantesTable extends Migration
             $table->string('comprobanteable_type');
 
             $table->string('docnumber');
+            $table->string('doctype_id_afip');
+            $table->string('doctype_name');
+
+            $table->string('nombre_empresa');
+            $table->string('domicilio_comercial_empresa');
+            $table->string('cuit_empresa');
+            $table->string('ing_brutos_empresa');
+            $table->string('fecha_inicio_act_empresa');
+            $table->string('razon_social_empresa');
+            $table->string('ivacondition_name_empresa');
+            
+            $table->string('condicion_venta');
+            $table->string('nombre_client')->nullable();
+            $table->string('domicilio_client')->nullable();
+            $table->string('ivacondition_name_client')->nullable();
 
             $table->timestamps();
 
             $table->foreignId('modelofact_id')->constrained('modelofacts')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('doctype_id')->constrained('doctypes')->onUpdate('cascade')->onDelete('cascade');
-            
+            //$table->foreignId('doctype_id')->constrained('doctypes')->onUpdate('cascade')->onDelete('cascade');
+            //$table->foreignId('ivacondition_id')->constrained('ivaconditions')->onUpdate('cascade')->onDelte('cascade');
         });
     }
 

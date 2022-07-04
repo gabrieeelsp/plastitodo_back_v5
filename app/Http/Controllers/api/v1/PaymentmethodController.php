@@ -27,7 +27,7 @@ class PaymentmethodController extends Controller
         
         $items = Paymentmethod::orderBy('name', 'ASC')
             ->where($atr)->get();
-            usleep(1000000);
+            //usleep(1000000);
         
         return PaymentmethodResource::collection($items);
     }

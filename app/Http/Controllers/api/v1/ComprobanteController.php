@@ -133,22 +133,24 @@ class ComprobanteController extends Controller
 
 
         if(!$sale->client || !$sale->client->ivacondition){ // Sin cliente registrado, Si no esta registrado se guarda como consumidor final
-            $ivacondicion = Ivacondition::find(3);
+            $ivacondition = Ivacondition::find(3);
         }else{
-            $ivacondicion = $sale->client->ivacondition;
+            $ivacondition = $sale->client->ivacondition;
         }
 
-        if($ivacondicion->id == 3){
-            $numero_doc = 0;
+        if($ivacondition->id == 3){
+            $numero_doc = "0";
             $id_afip_doc = 99;
-            $doctype_id = 4;
+            //$doctype_id = 4;
+            $doctype_name_client = 'DNI';
         }else{
             $numero_doc = $sale->client->docnumber;
             $id_afip_doc = $sale->client->doctype->id_afip;
-            $doctype_id = $sale->client->doctype_id;
+            //$doctype_id = $sale->client->doctype_id;
+            $doctype_name_client = $sale->client->doctype->name;
         }
 
-        if(!$ivacondicion->accept_modelofact($modelofact->id)) {
+        if(!$ivacondition->accept_modelofact($modelofact->id)) {
             return response()->json(['message' => 'La condición ante el iva no acepta la factura solicitada.'], 422);
         }
 
@@ -165,7 +167,31 @@ class ComprobanteController extends Controller
             $comprobante->comprobanteable_type = 'App\Models\Sale';
             $comprobante->modelofact_id = $modelofact->id;
             $comprobante->docnumber = $numero_doc;
-            $comprobante->doctype_id = $doctype_id;
+            $comprobante->doctype_id_afip = $id_afip_doc;
+            $comprobante->doctype_name =  $doctype_name_client;
+
+
+            $comprobante->nombre_empresa = $sale->sucursal->empresa->name;
+            $comprobante->razon_social_empresa = $sale->sucursal->empresa->razon_social;
+            $comprobante->domicilio_comercial_empresa = $sale->sucursal->empresa->domicilio_comercial;
+            $comprobante->ivacondition_name_empresa = $sale->sucursal->empresa->ivacondition->name;
+            $comprobante->cuit_empresa = $sale->sucursal->empresa->cuit;
+            
+            $comprobante->ing_brutos_empresa = $sale->sucursal->empresa->ing_brutos;
+            $comprobante->fecha_inicio_act_empresa = $sale->sucursal->empresa->fecha_inicio_act;
+
+            $comprobante->condicion_venta = $sale->getCondicionVenta();
+
+            
+            
+            if($ivacondition->id != 3){
+                $comprobante->nombre_client = $sale->client->name;
+                $comprobante->domicilio_client = $sale->client->direccion;
+                $comprobante->ivacondition_name_client = $ivacondition->name;
+            }else {
+                $comprobante->ivacondition_name_client = Ivacondition::find(3)->name;
+            }
+
         }else {
             $comprobante = $sale->comprobante;
         }
@@ -292,7 +318,25 @@ class ComprobanteController extends Controller
             $comprobante->comprobanteable_type = 'App\Models\Devolution';
             $comprobante->modelofact_id = $modelofact->id;
             $comprobante->docnumber = $devolution->sale->comprobante->docnumber;
-            $comprobante->doctype_id = $devolution->sale->comprobante->doctype_id;
+            $comprobante->doctype_id_afip = $devolution->sale->comprobante->doctype_id_afip;
+            $comprobante->doctype_name =  $devolution->sale->comprobante->doctype_name;
+
+            $comprobante->nombre_empresa = $devolution->sale->comprobante->nombre_empresa;
+            $comprobante->razon_social_empresa = $devolution->sale->comprobante->razon_social_empresa;
+            $comprobante->domicilio_comercial_empresa = $devolution->sale->comprobante->domicilio_comercial_empresa;
+            $comprobante->ivacondition_name_empresa = $devolution->sale->comprobante->ivacondition_name_empresa;
+            $comprobante->cuit_empresa = $devolution->sale->comprobante->cuit_empresa;
+            
+            $comprobante->ing_brutos_empresa = $devolution->sale->comprobante->ing_brutos_empresa;
+            $comprobante->fecha_inicio_act_empresa = $devolution->sale->comprobante->fecha_inicio_act_empresa;
+
+            $comprobante->condicion_venta = $devolution->sale->comprobante->condicion_venta;
+            //$comprobante->doctype_id = $devolution->sale->comprobante->doctype_id;
+
+
+            $comprobante->nombre_client = $devolution->sale->comprobante->nombre_client;
+            $comprobante->domicilio_client = $devolution->sale->comprobante->domicilio_client;
+            $comprobante->ivacondition_name_client = $devolution->sale->comprobante->ivacondition_name_client;
         }else {
             $comprobante = $devolution->comprobante;
         }
@@ -346,7 +390,7 @@ class ComprobanteController extends Controller
             'PtoVta' 	=> $devolution->sucursal->punto_venta_fe,  // Punto de venta
             'CbteTipo' 	=> $modelofact->id_afip_nc,  // Tipo de comprobante (ver tipos disponibles) 
             'Concepto' 	=> 1,  // Concepto del Comprobante: (1)Productos, (2)Servicios, (3)Productos y Servicios
-            'DocTipo' 	=> $devolution->sale->comprobante->doctype->id_afip, // Tipo de documento del comprador (99 consumidor final, ver tipos disponibles)
+            'DocTipo' 	=> $devolution->sale->comprobante->doctype_id_afip, // Tipo de documento del comprador (99 consumidor final, ver tipos disponibles)
             'DocNro' 	=> $devolution->sale->comprobante->docnumber,  // Número de documento del comprador (0 consumidor final)
             'CbteDesde' => $numero_comprobante,  // Número de comprobante o numero del primer comprobante en caso de ser mas de uno
             'CbteHasta' => $numero_comprobante,  // Número de comprobante o numero del último comprobante en caso de ser mas de uno
@@ -423,7 +467,26 @@ class ComprobanteController extends Controller
             $comprobante->comprobanteable_type = 'App\Models\Creditnote';
             $comprobante->modelofact_id = $modelofact->id;
             $comprobante->docnumber = $creditnote->sale->comprobante->docnumber;
-            $comprobante->doctype_id = $creditnote->sale->comprobante->doctype_id;
+            //$comprobante->doctype_id = $creditnote->sale->comprobante->doctype_id;
+            $comprobante->doctype_id_afip = $creditnote->sale->comprobante->doctype_id_afip;
+            $comprobante->doctype_name =  $creditnote->sale->comprobante->doctype_name;
+
+            $comprobante->nombre_empresa = $creditnote->sale->comprobante->nombre_empresa;
+            $comprobante->razon_social_empresa = $creditnote->sale->comprobante->razon_social_empresa;
+            $comprobante->domicilio_comercial_empresa = $creditnote->sale->comprobante->domicilio_comercial_empresa;
+            $comprobante->ivacondition_name_empresa = $creditnote->sale->comprobante->ivacondition_name_empresa;
+            $comprobante->cuit_empresa = $creditnote->sale->comprobante->cuit_empresa;
+            
+            $comprobante->ing_brutos_empresa = $creditnote->sale->comprobante->ing_brutos_empresa;
+            $comprobante->fecha_inicio_act_empresa = $creditnote->sale->comprobante->fecha_inicio_act_empresa;
+
+            $comprobante->condicion_venta = $creditnote->sale->comprobante->condicion_venta;
+            //$comprobante->doctype_id = $devolution->sale->comprobante->doctype_id;
+
+
+            $comprobante->nombre_client = $creditnote->sale->comprobante->nombre_client;
+            $comprobante->domicilio_client = $creditnote->sale->comprobante->domicilio_client;
+            $comprobante->ivacondition_name_client = $creditnote->sale->comprobante->ivacondition_name_client;
         }else {
             $comprobante = $creditnote->comprobante;
         }
@@ -477,7 +540,7 @@ class ComprobanteController extends Controller
             'PtoVta' 	=> $creditnote->sucursal->punto_venta_fe,  // Punto de venta
             'CbteTipo' 	=> $modelofact->id_afip_nc,  // Tipo de comprobante (ver tipos disponibles) 
             'Concepto' 	=> 1,  // Concepto del Comprobante: (1)Productos, (2)Servicios, (3)Productos y Servicios
-            'DocTipo' 	=> $creditnote->sale->comprobante->doctype->id_afip, // Tipo de documento del comprador (99 consumidor final, ver tipos disponibles)
+            'DocTipo' 	=> $creditnote->sale->comprobante->doctype_id_afip, // Tipo de documento del comprador (99 consumidor final, ver tipos disponibles)
             'DocNro' 	=> $creditnote->sale->comprobante->docnumber,  // Número de documento del comprador (0 consumidor final)
             'CbteDesde' => $numero_comprobante,  // Número de comprobante o numero del primer comprobante en caso de ser mas de uno
             'CbteHasta' => $numero_comprobante,  // Número de comprobante o numero del último comprobante en caso de ser mas de uno
@@ -548,12 +611,30 @@ class ComprobanteController extends Controller
             $comprobante = new Comprobante;
 
             $comprobante->punto_venta = $debitnote->sucursal->punto_venta_fe;
-            $comprobante->id_afip_tipo = $modelofact->id_afip_nc;
+            $comprobante->id_afip_tipo = $modelofact->id_afip_nd;
             $comprobante->comprobanteable_id = $debitnote->id;
             $comprobante->comprobanteable_type = 'App\Models\Debitnote';
             $comprobante->modelofact_id = $modelofact->id;
             $comprobante->docnumber = $debitnote->sale->comprobante->docnumber;
-            $comprobante->doctype_id = $debitnote->sale->comprobante->doctype_id;
+            $comprobante->doctype_id_afip = $debitnote->sale->comprobante->doctype_id_afip;
+            $comprobante->doctype_name =  $debitnote->sale->comprobante->doctype_name;
+
+            $comprobante->nombre_empresa = $debitnote->sale->comprobante->nombre_empresa;
+            $comprobante->razon_social_empresa = $debitnote->sale->comprobante->razon_social_empresa;
+            $comprobante->domicilio_comercial_empresa = $debitnote->sale->comprobante->domicilio_comercial_empresa;
+            $comprobante->ivacondition_name_empresa = $debitnote->sale->comprobante->ivacondition_name_empresa;
+            $comprobante->cuit_empresa = $debitnote->sale->comprobante->cuit_empresa;
+            
+            $comprobante->ing_brutos_empresa = $debitnote->sale->comprobante->ing_brutos_empresa;
+            $comprobante->fecha_inicio_act_empresa = $debitnote->sale->comprobante->fecha_inicio_act_empresa;
+
+            $comprobante->condicion_venta = $debitnote->sale->comprobante->condicion_venta;
+            //$comprobante->doctype_id = $devolution->sale->comprobante->doctype_id;
+
+
+            $comprobante->nombre_client = $debitnote->sale->comprobante->nombre_client;
+            $comprobante->domicilio_client = $debitnote->sale->comprobante->domicilio_client;
+            $comprobante->ivacondition_name_client = $debitnote->sale->comprobante->ivacondition_name_client;
         }else {
             $comprobante = $debitnote->comprobante;
         }
@@ -607,7 +688,7 @@ class ComprobanteController extends Controller
             'PtoVta' 	=> $debitnote->sucursal->punto_venta_fe,  // Punto de venta
             'CbteTipo' 	=> $modelofact->id_afip_nd,  // Tipo de comprobante (ver tipos disponibles) 
             'Concepto' 	=> 1,  // Concepto del Comprobante: (1)Productos, (2)Servicios, (3)Productos y Servicios
-            'DocTipo' 	=> $debitnote->sale->comprobante->doctype->id_afip, // Tipo de documento del comprador (99 consumidor final, ver tipos disponibles)
+            'DocTipo' 	=> $debitnote->sale->comprobante->doctype_id_afip, // Tipo de documento del comprador (99 consumidor final, ver tipos disponibles)
             'DocNro' 	=> $debitnote->sale->comprobante->docnumber,  // Número de documento del comprador (0 consumidor final)
             'CbteDesde' => $numero_comprobante,  // Número de comprobante o numero del primer comprobante en caso de ser mas de uno
             'CbteHasta' => $numero_comprobante,  // Número de comprobante o numero del último comprobante en caso de ser mas de uno

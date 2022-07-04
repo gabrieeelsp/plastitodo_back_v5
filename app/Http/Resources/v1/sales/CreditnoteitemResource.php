@@ -24,7 +24,8 @@ class CreditnoteitemResource extends JsonResource
             'relationships' => [
                 'ivaaliquot' => [
                     'id' => $this->ivaaliquot_id,
-                    'name' => $this->ivaaliquot->name
+                    'name' => $this->ivaaliquot->name,
+                    'valor' => $this->ivaaliquot->valor
                 ]
             ]
         ];

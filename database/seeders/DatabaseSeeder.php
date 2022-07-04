@@ -13,12 +13,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $this->call(IvaconditionSeeder::class);
         $this->call(EmpresaSeeder::class);
         $this->call(SucursalSeeder::class);
 
         $this->call(PaymentmethodSeeder::class);
 
-        $this->call(IvaconditionSeeder::class);
+        
         $this->call(IvaaliquotSeeder::class);
         $this->call(DoctypeSeeder::class);
         $this->call(ModelofactSeeder::class);

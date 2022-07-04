@@ -74,6 +74,11 @@ class Sale extends Model
         return false;
     }
 
+    public function getCondicionVenta()
+    {
+        return "Contado";
+    }
+
     public function get_subtotal_real_segun_iva($ivaaliquot_id)
     {
         $subtotal_real = 0;

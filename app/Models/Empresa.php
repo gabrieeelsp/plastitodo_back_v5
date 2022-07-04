@@ -10,4 +10,9 @@ class Empresa extends Model
     use HasFactory;
 
     public $timestamps = false;
+
+    public function ivacondition()
+    {
+        return $this->belongsTo(Ivacondition::class);
+    }
 }

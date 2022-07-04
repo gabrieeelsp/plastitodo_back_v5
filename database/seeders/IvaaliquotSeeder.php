@@ -36,6 +36,11 @@ class IvaaliquotSeeder extends Seeder
             'id_afip' => '5'
         ]);
         
+        DB::table('ivaaliquots')->insert([
+            'name' => '0',
+            'valor' => 0,
+            'id_afip' => '3'
+        ]);
         
     }
 }
