@@ -89,6 +89,7 @@ class SaleController extends Controller
      */
     public function store(Request $request)
     {
+
         $caja = null;
         if($request->has('caja_id')){
             $caja = Caja::find($request->get('caja_id'));

@@ -53,7 +53,7 @@ Route::prefix('v1')->group(static function () {
 
     Route::resource('stockproducts', StockproductController::class)->only(['index']);
     Route::resource('saleproducts', SaleproductController::class)->only(['index']);
-    Route::resource('combos', ComboController::class)->only(['index']);
+    Route::resource('combos', ComboController::class)->only(['index', 'show']);
 
     
 });
@@ -67,6 +67,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
 
     Route::resource('sales', SaleController::class)->only(['index', 'show', 'store']);
     Route::get('/sales/{id}/make_devolution', [SaleController::class, 'make_devolution']);
+    Route::get('get_sale_products_venta', [SaleproductController::class, 'get_sale_products_venta']);
     Route::resource('ivaconditions', IvaconditionController::class)->only(['index']);
     Route::resource('doctypes', DoctypeController::class)->only(['index']);
     Route::resource('clients', ClientController::class)->only(['index', 'update', 'show']);

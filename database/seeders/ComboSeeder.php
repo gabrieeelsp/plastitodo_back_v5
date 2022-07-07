@@ -19,8 +19,12 @@ class ComboSeeder extends Seeder
         //--1---------------------------------------------
         DB::table('combos')->insert([
             'name' => 'Golosinas ROJA',
-            'descuento' => 10,
+            'desc_min' => 10,
             'precision' => -1,
+            'desc_may' => 5,
+            'precio_min' => 810,
+            'precio_may' => 780,
+            
         ]);
 
         $comboitem = new Comboitem();

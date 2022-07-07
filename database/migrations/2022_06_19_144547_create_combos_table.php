@@ -16,7 +16,10 @@ class CreateCombosTable extends Migration
         Schema::create('combos', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->decimal('descuento', 10, 6);
+            $table->decimal('desc_min', 10, 6);
+            $table->decimal('desc_may', 10, 6);
+            $table->decimal('precio_min', 10, 4);
+            $table->decimal('precio_may', 10, 4);
             $table->boolean('is_enable')->default(true);
             $table->integer('precision')->default(4);
         });

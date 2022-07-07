@@ -55,7 +55,7 @@ class ComboController extends Controller
      */
     public function show(Combo $combo)
     {
-        //
+        return new ComboResource($combo);
     }
 
     /**

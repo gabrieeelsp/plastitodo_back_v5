@@ -17,6 +17,7 @@ class CreateComboitemSaleproductTable extends Migration
             $table->id();
             $table->integer('comboitem_id')->unsigned();
             $table->integer('saleproduct_id')->unsigned();
+            $table->boolean('is_enable')->default(true);
         });
     }
 

@@ -19,4 +19,19 @@ class Stockproduct extends Model
     {
         return $this->belongsTo(Ivaaliquot::class);
     }
+
+    public function stockSucursales()
+    {
+        return $this->hasMany(Stocksucursal::class);
+    }
+
+    public function getStockSucursal($sucursal_id) {
+        
+        foreach ( $this->stockSucursales as $stockSucursal) {
+            if ( $sucursal_id == $stockSucursal->sucursal_id ) {
+                return $stockSucursal->stock;
+            }
+            
+        }
+    }
 }

@@ -25,7 +25,8 @@ class StockproductSeeder extends Seeder
         foreach(Sucursal::all() as $sucursal){
             DB::table('stocksucursals')->insert([
                 'stockproduct_id' => 1,
-                'sucursal_id' => $sucursal->id
+                'sucursal_id' => $sucursal->id,
+                'stock' => 1000,
             ]);
         }
         DB::table('saleproducts')->insert([ // 1
@@ -52,7 +53,8 @@ class StockproductSeeder extends Seeder
         foreach(Sucursal::all() as $sucursal){
             DB::table('stocksucursals')->insert([
                 'stockproduct_id' => 2,
-                'sucursal_id' => $sucursal->id
+                'sucursal_id' => $sucursal->id,
+                'stock' => 1000,
             ]);
         }
         DB::table('saleproducts')->insert([ // 3
@@ -79,7 +81,8 @@ class StockproductSeeder extends Seeder
         foreach(Sucursal::all() as $sucursal){
             DB::table('stocksucursals')->insert([
                 'stockproduct_id' => 3,
-                'sucursal_id' => $sucursal->id
+                'sucursal_id' => $sucursal->id,
+                'stock' => 1000,
             ]);
         }
         DB::table('saleproducts')->insert([ // 5
@@ -99,7 +102,8 @@ class StockproductSeeder extends Seeder
         foreach(Sucursal::all() as $sucursal){
             DB::table('stocksucursals')->insert([
                 'stockproduct_id' => 4,
-                'sucursal_id' => $sucursal->id
+                'sucursal_id' => $sucursal->id,
+                'stock' => 1000,
             ]);
         }
         DB::table('saleproducts')->insert([ // 6
@@ -119,7 +123,8 @@ class StockproductSeeder extends Seeder
         foreach(Sucursal::all() as $sucursal){
             DB::table('stocksucursals')->insert([
                 'stockproduct_id' => 5,
-                'sucursal_id' => $sucursal->id
+                'sucursal_id' => $sucursal->id,
+                'stock' => 1000,
             ]);
         }
         DB::table('saleproducts')->insert([ // 6
@@ -140,7 +145,8 @@ class StockproductSeeder extends Seeder
         foreach(Sucursal::all() as $sucursal){
             DB::table('stocksucursals')->insert([
                 'stockproduct_id' => 6,
-                'sucursal_id' => $sucursal->id
+                'sucursal_id' => $sucursal->id,
+                'stock' => 1000,
             ]);
         }
         DB::table('saleproducts')->insert([ // 3
@@ -152,7 +158,7 @@ class StockproductSeeder extends Seeder
         ]);
         DB::table('saleproducts')->insert([ //4
             'stockproduct_id' => 6,
-            'name' => 'ABandeja 103 Micro PAQx100',
+            'name' => 'Bandeja 103 Micro PAQx100',
             'relacion_venta_stock' => 100,
             'porc_min' => 25,
             'porc_may' => 15
@@ -167,7 +173,8 @@ class StockproductSeeder extends Seeder
         foreach(Sucursal::all() as $sucursal){
             DB::table('stocksucursals')->insert([
                 'stockproduct_id' => 7,
-                'sucursal_id' => $sucursal->id
+                'sucursal_id' => $sucursal->id,
+                'stock' => 1000,
             ]);
         }
         DB::table('saleproducts')->insert([ // 3
@@ -194,7 +201,8 @@ class StockproductSeeder extends Seeder
         foreach(Sucursal::all() as $sucursal){
             DB::table('stocksucursals')->insert([
                 'stockproduct_id' => 8,
-                'sucursal_id' => $sucursal->id
+                'sucursal_id' => $sucursal->id,
+                'stock' => 1000,
             ]);
         }
         DB::table('saleproducts')->insert([ // 3
@@ -221,7 +229,8 @@ class StockproductSeeder extends Seeder
         foreach(Sucursal::all() as $sucursal){
             DB::table('stocksucursals')->insert([
                 'stockproduct_id' => 9,
-                'sucursal_id' => $sucursal->id
+                'sucursal_id' => $sucursal->id,
+                'stock' => 1000,
             ]);
         }
         DB::table('saleproducts')->insert([ // 3
@@ -251,7 +260,8 @@ class StockproductSeeder extends Seeder
         foreach(Sucursal::all() as $sucursal){
             DB::table('stocksucursals')->insert([
                 'stockproduct_id' => 10,
-                'sucursal_id' => $sucursal->id
+                'sucursal_id' => $sucursal->id,
+                'stock' => 1000,
             ]);
         }
         DB::table('saleproducts')->insert([ // 3
@@ -271,7 +281,8 @@ class StockproductSeeder extends Seeder
         foreach(Sucursal::all() as $sucursal){
             DB::table('stocksucursals')->insert([
                 'stockproduct_id' => 11,
-                'sucursal_id' => $sucursal->id
+                'sucursal_id' => $sucursal->id,
+                'stock' => 1000,
             ]);
         }
         DB::table('saleproducts')->insert([ // 3

@@ -19,7 +19,6 @@ class ClientController extends Controller
      */
     public function index(Request $request)
     {
-
         $searchText = trim($request->get('q'));
         $val = explode(' ', $searchText );
 
@@ -78,9 +77,10 @@ class ClientController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show($client_id)
     {
-        return $user;
+        $client = User::findOrFail($client_id);
+        return new ClientResource($client);
     }
 
     /**

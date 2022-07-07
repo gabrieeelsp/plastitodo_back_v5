@@ -31,12 +31,17 @@ class Combo extends Model
         return $this->comboitems->first()->saleproducts->first()->stockproduct->ivaaliquot;
     }
 
-    public function getPrecioMin()
+    public function setPrecios()
     {
-        $precio = 0;
+        $precio_min = 0;
+        $precio_may = 0;
         foreach($this->comboitems as $comboitem){
-            $precio = round($precio + $comboitem->getPrecioMin(), 4, PHP_ROUND_HALF_UP);
+            $precio_min = round($precio + $comboitem->getPrecioMin(), 4, PHP_ROUND_HALF_UP);
+            $precio_may = round($precio + $comboitem->getPrecioMay(), 4, PHP_ROUND_HALF_UP);
         }
-        return round($precio * round(1 - round($this->descuento / 100, 4, PHP_ROUND_HALF_UP), 8, PHP_ROUND_HALF_UP), $this->precision, PHP_ROUND_HALF_UP);
+        $this->precio_min = round($precio_min * round(1 - round($this->desc_min / 100, 4, PHP_ROUND_HALF_UP), 8, PHP_ROUND_HALF_UP), $this->precision, PHP_ROUND_HALF_UP);
+        $this->precio_may = round($precio_may * round(1 - round($this->desc_may / 100, 4, PHP_ROUND_HALF_UP), 8, PHP_ROUND_HALF_UP), $this->precision, PHP_ROUND_HALF_UP);
+
+        $this.save();
     }
 }

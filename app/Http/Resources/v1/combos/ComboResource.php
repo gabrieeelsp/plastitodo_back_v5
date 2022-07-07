@@ -19,8 +19,10 @@ class ComboResource extends JsonResource
             'type' => 'combos',
             'attributes' => [
                 'name' => $this->name,
-                'descuento' => $this->descuento,
-                'precio_min' => $this->getPrecioMin(),
+                'desc_min' => $this->desc_min,
+                'desc_may' => $this->desc_may,
+                'precio_min' => $this->precio_min,
+                'precio_may' => $this->precio_may,
             ],
             'relationships' => [
                 'comboitems' => ComboitemResource::collection($this->comboitems),

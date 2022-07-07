@@ -13,7 +13,8 @@ class Comboitem extends Model
 
     public function saleproducts()
     {
-        return $this->belongsToMany(Saleproduct::class);
+        return $this->belongsToMany(Saleproduct::class)
+            ->withPivot('is_enable');
     }
 
     public function hasSaleproduct($saleproduct_id)
@@ -32,6 +33,17 @@ class Comboitem extends Model
         foreach($this->saleproducts as $saleproduct){
             if($saleproduct->getPrecioMin() > $max_precio){
                 $max_precio = $saleproduct->getPrecioMin();
+            }
+        }
+        return round($max_precio * $this->cantidad, 4, PHP_ROUND_HALF_UP);
+    }
+
+    public function getPrecioMay()
+    {
+        $max_precio = 0;
+        foreach($this->saleproducts as $saleproduct){
+            if($saleproduct->getPrecioMay() > $max_precio){
+                $max_precio = $saleproduct->getPrecioMay();
             }
         }
         return round($max_precio * $this->cantidad, 4, PHP_ROUND_HALF_UP);
