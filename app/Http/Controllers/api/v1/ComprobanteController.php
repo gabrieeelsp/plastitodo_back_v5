@@ -101,17 +101,18 @@ class ComprobanteController extends Controller
 
     public function make_fact(Request $request)
     {  
+        //return $request->all();
         $sale = Sale::findOrFail($request->get('sale_id'));
 
         if($sale->comprobante && $sale->comprobante->is_autorizado()) {
             return response()->json(['message' => 'El comprobante ya se encuentra generado.']);
         }
 
-        $modelofact = Modelofact::findOrFail($request->get('modelofact_id'));
+        $ivacondition = Ivacondition::findOrFail($request->get('ivacondition_id'));
 
         $afip = new Afip(array('CUIT' => 20291188568));
 
-        $resp = $this->verificar_comprobantes($sale->sucursal->punto_venta_fe, $modelofact->id_afip_factura, $afip);
+        $resp = $this->verificar_comprobantes($sale->sucursal->punto_venta_fe, $ivacondition->modelofact->id_afip_factura, $afip);
 
         if($sale->comprobante && $sale->comprobante->is_autorizado()){ //Este comprobante ya estaba autorizado
             return new ComprobanteSaleResource($sale->comprobante);
@@ -119,42 +120,44 @@ class ComprobanteController extends Controller
 
         $is_pago_efectivo = $sale->hasPaymentCash();
 
-        if(( !$sale->client ) || ($sale->client && !$sale->client->is_enable_afip())){ // Sin cliente registrado
+        if(( !$sale->client ) || ($sale->client && !$sale->client->tiene_informacion_fe())){ // Sin cliente registrado
             if($is_pago_efectivo){
-                if($sale->total >= $modelofact->monto_max_no_id_efectivo) {
+                if($sale->total >= $ivacondition->modelofact->monto_max_no_id_efectivo) {
                     return response()->json(['message' => 'No es posible realizar la operación. No existe información fiscal correspondiente.'], 422);
                 }
             }else{ // no es pago efectivo
-                if($sale->total >= $modelofact->monto_max_no_id_no_efectivo) {
+                if($sale->total >= $ivacondition->modelofact->monto_max_no_id_no_efectivo) {
                     return response()->json(['message' => 'No es posible realizar la operación. No existe información fiscal correspondiente.'], 422);
                 }
             }
         }
+        // todo -> verificar si el cliente quiere incluir sus datos
 
 
-        if(!$sale->client || !$sale->client->ivacondition){ // Sin cliente registrado, Si no esta registrado se guarda como consumidor final
-            $ivacondition = Ivacondition::find(3);
-        }else{
-            $ivacondition = $sale->client->ivacondition;
-        }
+        
 
-        if($ivacondition->id == 3){
-            $numero_doc = "0";
-            $id_afip_doc = 99;
-            //$doctype_id = 4;
-            $doctype_name_client = 'DNI';
-        }else{
+        if( $sale->client && $sale->client->tiene_informacion_fe() ) {
+            if ( $sale->client->tipo_persona == 'FISICA') {
+                $nombre = $sale->client->name.' '.$sale->client->surname;
+            }else {
+                $nombre = $sale->client->nombre_fact;
+            }
             $numero_doc = $sale->client->docnumber;
-            $id_afip_doc = $sale->client->doctype->id_afip;
-            //$doctype_id = $sale->client->doctype_id;
-            $doctype_name_client = $sale->client->doctype->name;
+            $id_afip_doctype = $sale->client->doctype->id_afip;
+            $name_doctype = $sale->client->doctype->name;
+            $direccion = $sale->client->direccion_fact;
+
+        }else {
+            $nombre = "";
+            $numero_doc = "0";
+            $id_afip_doctype = 99;
+            $name_doctype = "Sin identificar";
+            $direccion = "";
         }
 
-        if(!$ivacondition->accept_modelofact($modelofact->id)) {
-            return response()->json(['message' => 'La condición ante el iva no acepta la factura solicitada.'], 422);
-        }
-
-        $numero_comprobante = $afip->ElectronicBilling->getLastVoucher($sale->sucursal->punto_venta_fe, $modelofact->id_afip_factura);
+            
+        
+        $numero_comprobante = $afip->ElectronicBilling->getLastVoucher($sale->sucursal->punto_venta_fe, $ivacondition->modelofact->id_afip_factura);
 
         $numero_comprobante = $numero_comprobante + 1;
 
@@ -162,13 +165,13 @@ class ComprobanteController extends Controller
             $comprobante = new Comprobante;
 
             $comprobante->punto_venta = $sale->sucursal->punto_venta_fe;
-            $comprobante->id_afip_tipo = $modelofact->id_afip_factura;
+            $comprobante->id_afip_tipo = $ivacondition->modelofact->id_afip_factura;
             $comprobante->comprobanteable_id = $sale->id;
             $comprobante->comprobanteable_type = 'App\Models\Sale';
-            $comprobante->modelofact_id = $modelofact->id;
+            $comprobante->modelofact_id = $ivacondition->modelofact->id;
             $comprobante->docnumber = $numero_doc;
-            $comprobante->doctype_id_afip = $id_afip_doc;
-            $comprobante->doctype_name =  $doctype_name_client;
+            $comprobante->doctype_id_afip = $id_afip_doctype;
+            $comprobante->doctype_name =  $name_doctype;
 
 
             $comprobante->nombre_empresa = $sale->sucursal->empresa->name;
@@ -183,14 +186,10 @@ class ComprobanteController extends Controller
             $comprobante->condicion_venta = $sale->getCondicionVenta();
 
             
-            
-            if($ivacondition->id != 3){
-                $comprobante->nombre_client = $sale->client->name;
-                $comprobante->domicilio_client = $sale->client->direccion;
-                $comprobante->ivacondition_name_client = $ivacondition->name;
-            }else {
-                $comprobante->ivacondition_name_client = Ivacondition::find(3)->name;
-            }
+            $comprobante->nombre_fact_client = $nombre;
+            $comprobante->direccion_fact_client = $direccion;
+            $comprobante->ivacondition_name_client = $ivacondition->name;
+
 
         }else {
             $comprobante = $sale->comprobante;
@@ -246,9 +245,9 @@ class ComprobanteController extends Controller
         $data = array(
             'CantReg' 	=> 1,  // Cantidad de comprobantes a registrar
             'PtoVta' 	=> $sale->sucursal->punto_venta_fe,  // Punto de venta
-            'CbteTipo' 	=> $modelofact->id_afip_factura,  // Tipo de comprobante (ver tipos disponibles) 
+            'CbteTipo' 	=> $ivacondition->modelofact->id_afip_factura,  // Tipo de comprobante (ver tipos disponibles) 
             'Concepto' 	=> 1,  // Concepto del Comprobante: (1)Productos, (2)Servicios, (3)Productos y Servicios
-            'DocTipo' 	=> $id_afip_doc, // Tipo de documento del comprador (99 consumidor final, ver tipos disponibles)
+            'DocTipo' 	=> $id_afip_doctype, // Tipo de documento del comprador (99 consumidor final, ver tipos disponibles)
             'DocNro' 	=> $numero_doc,  // Número de documento del comprador (0 consumidor final)
             'CbteDesde' => $numero_comprobante,  // Número de comprobante o numero del primer comprobante en caso de ser mas de uno
             'CbteHasta' => $numero_comprobante,  // Número de comprobante o numero del último comprobante en caso de ser mas de uno
@@ -283,8 +282,7 @@ class ComprobanteController extends Controller
         return new ComprobanteSaleResource($comprobante);
     }
 
-    public function make_nc_from_devolution(Request $request)
-    {
+    public function make_nc_from_devolution(Request $request) {
         $devolution = Devolution::findOrFail($request->get('devolution_id'));
 
         if($devolution->comprobante && $devolution->comprobante->is_autorizado()) {
@@ -331,11 +329,9 @@ class ComprobanteController extends Controller
             $comprobante->fecha_inicio_act_empresa = $devolution->sale->comprobante->fecha_inicio_act_empresa;
 
             $comprobante->condicion_venta = $devolution->sale->comprobante->condicion_venta;
-            //$comprobante->doctype_id = $devolution->sale->comprobante->doctype_id;
 
-
-            $comprobante->nombre_client = $devolution->sale->comprobante->nombre_client;
-            $comprobante->domicilio_client = $devolution->sale->comprobante->domicilio_client;
+            $comprobante->nombre_fact_client = $devolution->sale->comprobante->nombre_fact_client;
+            $comprobante->direccion_fact_client = $devolution->sale->comprobante->direccion_fact_client;
             $comprobante->ivacondition_name_client = $devolution->sale->comprobante->ivacondition_name_client;
         }else {
             $comprobante = $devolution->comprobante;
@@ -484,8 +480,8 @@ class ComprobanteController extends Controller
             //$comprobante->doctype_id = $devolution->sale->comprobante->doctype_id;
 
 
-            $comprobante->nombre_client = $creditnote->sale->comprobante->nombre_client;
-            $comprobante->domicilio_client = $creditnote->sale->comprobante->domicilio_client;
+            $comprobante->nombre_fact_client = $creditnote->sale->comprobante->nombre_fact_client;
+            $comprobante->direccion_fact_client = $creditnote->sale->comprobante->direccion_fact_client;
             $comprobante->ivacondition_name_client = $creditnote->sale->comprobante->ivacondition_name_client;
         }else {
             $comprobante = $creditnote->comprobante;
@@ -632,8 +628,8 @@ class ComprobanteController extends Controller
             //$comprobante->doctype_id = $devolution->sale->comprobante->doctype_id;
 
 
-            $comprobante->nombre_client = $debitnote->sale->comprobante->nombre_client;
-            $comprobante->domicilio_client = $debitnote->sale->comprobante->domicilio_client;
+            $comprobante->nombre_fact_client = $debitnote->sale->comprobante->nombre_fact_client;
+            $comprobante->direccion_fact_client = $debitnote->sale->comprobante->direccion_fact_client;
             $comprobante->ivacondition_name_client = $debitnote->sale->comprobante->ivacondition_name_client;
         }else {
             $comprobante = $debitnote->comprobante;

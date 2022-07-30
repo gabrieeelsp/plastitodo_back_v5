@@ -13,6 +13,8 @@ use App\Models\Comboitem;
 use App\Models\Payment;
 use App\Models\Stocksucursal;
 use App\Models\User;
+use App\Models\Modelofact;
+use App\Models\Ivacondition;
 use Illuminate\Http\Request;
 
 use Carbon\Carbon;
@@ -89,6 +91,73 @@ class SaleController extends Controller
      */
     public function store(Request $request)
     {
+        //return $request->all();
+        //usleep(1500000);
+        $client = null;
+            
+        if($request->has('client_id')){
+            $client = User::find($request->get('client_id'));
+        }
+
+        //---- verificar cuenta corriente del cliente sino devolver respuesta --------
+        $total_payments = 0;
+        if($request->has('payments')){
+            $payments = $request->get('payments');
+            foreach($payments as $payment){
+                $total_payments = $total_payments + $payment['valor'];
+            }
+        }
+        $saldo_sale = round($request->get('total') - round($total_payments, 2,PHP_ROUND_HALF_UP), 2, PHP_ROUND_HALF_DOWN);
+        if ( !$client && $saldo_sale > 0 ) {
+            return response()->json(['message' => 'La suma de los pagos no puede ser inferior al total de la venta'], 422);
+        }
+
+        if ( $client ) {
+            if ( round($client->saldo + $saldo_sale, 2, PHP_ROUND_HALF_UP) > $client->credito_disponible) {
+                return response()->json(['message' => 'EL cliente no posee crédito disponible que permita registrar la venta saldo_cliente: ' . $client->saldo. ' saldo_venta: '.$saldo_sale.' saldo disp: '. $client->credito_disponible   ], 422);
+            }
+
+        }
+        //---- verificar cuenta corriente del cliente sino devolver respuesta --------
+
+        
+        //---- verificar se se va a poder factuar sino devolver respuesta --------
+        $ivacondition = null;
+        if ( $request->has('ivacondition_id') ) {
+            $ivacondition = Ivacondition::find($request->get('ivacondition_id'));
+            
+            if ( $ivacondition == null ) { return response()->json(['message' => 'código de condicion ante iva incorrecto.'], 422); }
+
+            $is_pago_efectivo = false;
+            if($request->has('payments')){
+                $payments = $request->get('payments');
+                foreach($payments as $payment){
+                    if ( $payment['paymentmethod_id'] == 1 ) {
+                        $is_pago_efectivo = true;
+                    }
+                }
+            }
+            
+            
+            
+            if(( !$client ) || ($client != null && !$client->tiene_informacion_fe())){ // Sin cliente registrado
+                
+                if($is_pago_efectivo){
+                    if($request->get('total') >= $ivacondition->modelofact->monto_max_no_id_efectivo) {
+                        return response()->json(['message' => 'No es posible realizar la operación. No existe información fiscal correspondiente.1'], 422);
+                    }
+                }else{ // no es pago efectivo
+                    if($request->get('total') >= $ivacondition->modelofact->monto_max_no_id_no_efectivo) {
+                        return response()->json(['message' => 'No es posible realizar la operación. No existe información fiscal correspondiente.2'], 422);
+                    }
+                }
+            }
+
+        }
+
+        //---- verificar se se va a poder factuar sino devolver respuesta --------
+
+        
 
         $caja = null;
         if($request->has('caja_id')){
@@ -114,9 +183,9 @@ class SaleController extends Controller
             $sale->total = $request->get('total');
 
             $saldo_cliente = 0;
-            $client = null;
+            //$client = null;
             if($request->has('client_id')){
-                $client = User::find($request->get('client_id'));
+                //$client = User::find($request->get('client_id'));
                 $sale->client()->associate($client);
 
                 $saldo_cliente = $client->saldo;
@@ -141,6 +210,14 @@ class SaleController extends Controller
                 $stockSucursal = Stocksucursal::where('stockproduct_id', $saleItem->saleproduct->stockproduct_id)
                     ->where('sucursal_id', $request->get('sucursal_id'))
                     ->first();
+                if ( !$stockSucursal ) {
+                    $stockSucursal = Stocksucursal::create();
+                    $stockSucursal->stock = 0;
+                    $stockSucursal->stockproduct()->associate($saleItem->saleproduct->stockproduct_id);
+                    $stockSucursal->sucursal()->associate($request->get('sucursal_id'));
+                    $stockSucursal->save();
+
+                }
                 $stockSucursal->stock = $stockSucursal->stock - round($item['cantidad'] * $saleItem->saleproduct->relacion_venta_stock, 6, PHP_ROUND_HALF_UP);
 
                 $stockSucursal->save();
@@ -176,6 +253,21 @@ class SaleController extends Controller
 
                         $salecombosaleproduct->save();
 
+                        $stockSucursal = Stocksucursal::where('stockproduct_id', $salecombosaleproduct->saleproduct->stockproduct_id)
+                            ->where('sucursal_id', $request->get('sucursal_id'))
+                            ->first();
+                        if ( !$stockSucursal ) {
+                            $stockSucursal = Stocksucursal::create();
+                            $stockSucursal->stock = 0;
+                            $stockSucursal->stockproduct()->associate($salecombosaleproduct->saleproduct->stockproduct_id);
+                            $stockSucursal->sucursal()->associate($request->get('sucursal_id'));
+                            $stockSucursal->save();
+
+                        }
+                        $stockSucursal->stock = $stockSucursal->stock - round($saleproduct_sale['cantidad'] * $salecombosaleproduct->saleproduct->relacion_venta_stock, 6, PHP_ROUND_HALF_UP);
+
+                        $stockSucursal->save();
+
                         $cant_total = $cant_total + $saleproduct_sale['cantidad'];
                     }
 
@@ -203,7 +295,7 @@ class SaleController extends Controller
                     $salePayment->caja()->associate($caja);
 
                     if($request->has('client_id')){
-                        $saldo_cliente =  round($saldo_cliente - $salePayment->velor, 6, PHP_ROUND_HALF_UP);
+                        $saldo_cliente =  round($saldo_cliente - $salePayment->valor, 6, PHP_ROUND_HALF_UP);
                         $salePayment->saldo = $saldo_cliente;
                     }
 
@@ -221,7 +313,7 @@ class SaleController extends Controller
             }
 
             $sale->save();
-            usleep(1000000);
+            usleep(500000);
 
             DB::commit();
         }catch(\Exception $e){

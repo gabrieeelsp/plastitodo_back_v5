@@ -18,7 +18,7 @@ class CreateIvaconditionsTable extends Migration
             $table->integer('id_afip');
             $table->string('name');
 
-            //$table->foreignId('modelofact_id')->constrained('modelofacts')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('modelofact_id')->constrained('modelofacts')->onUpdate('cascade')->onDelete('cascade');
 
         });
     }

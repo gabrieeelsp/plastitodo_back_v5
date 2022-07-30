@@ -18,7 +18,23 @@ class EmpresaResource extends JsonResource
             'id' => $this->id,
             'type' => 'empresas',
             'attributes' => [
-                'name' => $this->name
+                'name' => $this->name,
+                'razon_social' => $this->razon_social,
+                'domicilio_comercial' => $this->domicilio_comercial,
+                'cuit' => $this->cuit,
+                'ing_brutos' => $this->ing_brutos,
+                'fecha_inicio_act' => $this->fecha_inicio_act,
+            ],
+            'relationships' => [
+                'ivacondition' => $this->ivacondition ? [
+                    'id' => $this->ivacondition->id,
+                    'attributes' => [
+                        'name' => $this->ivacondition->name,
+                    ],
+                    
+                ] : null,
+                
+                
             ]
         ];
     }

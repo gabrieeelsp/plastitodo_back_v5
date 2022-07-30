@@ -14,6 +14,30 @@ class ComboitemsaleproductResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'type' => 'saleproducts',
+            'attributes' => [
+                'name' => $this->name,
+                'relacion_venta_stock' => $this->relacion_venta_stock,
+
+                'precio_min' => $this->precio_min,
+
+                'precio_may' => $this->precio_may,
+
+                'is_enable' => $this->pivot->is_enable,
+            ],
+            'relationships' => [
+                'stockproduct' => [
+                    'id' => $this->stockproduct_id,
+                    'type' => 'stockproducts',
+                    'attributes' => [
+                        'costo' => $this->stockproduct->costo,
+                    ]
+                    
+                ],
+
+            ]
+        ];
     }
 }

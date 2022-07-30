@@ -20,7 +20,8 @@ class ComboSeeder extends Seeder
         DB::table('combos')->insert([
             'name' => 'Golosinas ROJA',
             'desc_min' => 10,
-            'precision' => -1,
+            'precision_min' => -1,
+            'precision_may' => 1,
             'desc_may' => 5,
             'precio_min' => 810,
             'precio_may' => 780,

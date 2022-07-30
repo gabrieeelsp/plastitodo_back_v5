@@ -65,6 +65,26 @@ class ComboController extends Controller
      * @param  \App\Models\Combo  $combo
      * @return \Illuminate\Http\Response
      */
+
+    public function update_values(Request $request, $combo_id)
+    {   
+        $combo = Combo::findOrFail($combo_id);
+
+        $data = $request->get('data');
+
+        $combo->desc_min = $data['attributes']['desc_min'];
+        $combo->desc_may = $data['attributes']['desc_may'];
+        
+        $combo->setPrecios();
+
+        $combo->save();
+
+        $combo_saved = Combo::find($combo->id);
+
+        return new ComboResource($combo_saved);
+    }
+
+
     public function update(Request $request, Combo $combo)
     {
         //

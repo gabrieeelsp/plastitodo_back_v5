@@ -35,8 +35,8 @@ class ComprobanteSaleResource extends JsonResource
                 'ing_brutos_empresa' => $this->ing_brutos_empresa,
                 'fecha_inicio_act_empresa' => $this->fecha_inicio_act_empresa,                
 
-                'nombre_client' => $this->nombre_client,
-                'domicilio_client' => $this->domicilio_client,
+                'nombre_fact_client' => $this->nombre_fact_client,
+                'direccion_fact_client' => $this->direccion_fact_client,
                 'ivacondition_name_client' => $this->ivacondition_name_client,
                 'condicion_venta' => $this->condicion_venta,
                 'docnumber_client' => $this->docnumber,

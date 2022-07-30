@@ -10,7 +10,12 @@ class Saleproduct extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name'
+        'name',
+        'relacion_venta_stock',
+        'is_enable',
+        'porc_min',
+        'porc_may',
+        'barcode'
     ];
 
     public $timestamps = false;
@@ -33,5 +38,34 @@ class Saleproduct extends Model
     public function getPrecioMay()
     {   
         return round($this->getCosto() * round(1 + round($this->porc_may / 100, 8, PHP_ROUND_HALF_UP), 8, PHP_ROUND_HALF_UP), 4, PHP_ROUND_HALF_UP);
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
+
+    public function saleproductgroup() 
+    {
+        return $this->belongsTo(Saleproductgroup::class);
+    }
+    public function comboitems()
+    {
+        return $this->belongsToMany(Comboitem::class)
+            ->withPivot('is_enable');
+    }
+
+    public function set_precios ( $costo_base )
+    {
+
+        $costo = round($costo_base * $this->relacion_venta_stock, 8, PHP_ROUND_HALF_UP);
+
+        $this->precio_min = round($costo * round(1 + round($this->porc_min / 100, 4, PHP_ROUND_HALF_UP), 8, PHP_ROUND_HALF_UP), $this->precision_min, PHP_ROUND_HALF_UP);
+
+        $this->precio_may = round($costo * round(1 + round($this->porc_may / 100, 8, PHP_ROUND_HALF_UP), 8, PHP_ROUND_HALF_UP), $this->precision_may, PHP_ROUND_HALF_UP);
+
+        $this->precio_min_desc = round($this->precio_min * round(1 - round($this->porc_min_desc / 100, 4, PHP_ROUND_HALF_UP), 8, PHP_ROUND_HALF_UP), $this->presicion_min, PHP_ROUND_HALF_UP);
+
+        $this->precio_may_desc = round($this->precio_may * round(1 - round($this->porc_may_desc / 100, 4, PHP_ROUND_HALF_UP), 8, PHP_ROUND_HALF_UP), $this->presicion_may, PHP_ROUND_HALF_UP);
     }
 }

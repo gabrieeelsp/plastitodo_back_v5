@@ -17,7 +17,7 @@ class IvaconditionController extends Controller
      */
     public function index()
     {
-        $items = Ivacondition::orderBy('id_afip', 'ASC')->get();
+        $items = Ivacondition::orderBy('name', 'ASC')->get();
         
         return IvaconditionResource::collection($items);
     }

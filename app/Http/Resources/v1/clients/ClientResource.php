@@ -19,11 +19,23 @@ class ClientResource extends JsonResource
             'type' => 'clients',
             'attributes' => [
                 'name' => $this->name,
-                'tipo' => $this->tipo,
+                
 		        'surname' => $this->surname,
+
+                'tipo' => $this->tipo,
+
+                'tipo_persona' => $this->tipo_persona,
+
+                'nombre_fact' => $this->nombre_fact,
+                'direccion_fact' => $this->direccion_fact,
+                'is_fact_default' => $this->is_fact_default,
                 'direccion' => $this->direccion,
+                
                 'telefono' => $this->telefono,
                 'docnumber' => $this->docnumber,
+                
+                'saldo' => $this->saldo,
+                'credito_disponible' => $this->credito_disponible,
 
             ],
             'relationships' => [
@@ -32,7 +44,15 @@ class ClientResource extends JsonResource
                     'attributes' => [
                         'id_afip' => $this->ivacondition->id_afip,
                         'name' => $this->ivacondition->name,
-                    ] 
+                    ],
+                    'relationships' => [
+                        'modelofact' => $this->ivacondition->modelofact ? [
+                            'id' => $this->ivacondition->modelofact->id,
+                            'attributes' => [
+                                'name' => $this->ivacondition->modelofact->name
+                            ] 
+                        ] : null
+                    ]
                 ] : null,
                 'doctype' => $this->doctype ? [
                     'id' => $this->doctype->id,

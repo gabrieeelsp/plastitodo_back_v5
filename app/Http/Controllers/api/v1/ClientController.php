@@ -31,6 +31,14 @@ class ClientController extends Controller
             
         };
 
+        if ( $request->has('ivacondition_id') ) {
+            array_push($atr_name, ['ivacondition_id', '=', $request->get('ivacondition_id')] );
+        }
+
+        if ( $request->has('tipo') ) {
+            array_push($atr_name, ['tipo', '=', $request->get('tipo')] );
+        }
+
         $limit = 5;
         if($request->has('limit')){
             $limit = $request->get('limit');
@@ -92,10 +100,23 @@ class ClientController extends Controller
      */
     public function update(Request $request, $user_id)
     {
+        //return $request->all();
+
         $user = User::findOrFail($user_id);
 
         //return $request->input('data.attributes');
         $user->update($request->input('data.attributes'));
+
+        if ( $request->has('data.relationships.ivacondition')) {
+            $user->ivacondition_id = $request->get('data')['relationships']['ivacondition']['id'];
+        }
+
+        if ( $request->has('data.relationships.doctype')) {
+            $user->doctype_id = $request->get('data')['relationships']['doctype']['id'];
+        }
+
+        $user->save();
+
         return new ClientResource($user);
     }
 

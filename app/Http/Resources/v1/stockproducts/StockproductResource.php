@@ -19,6 +19,11 @@ class StockproductResource extends JsonResource
             'type' => 'stockproducts',
             'attributes' => [
                 'name' => $this->name,
+                'costo' => $this->costo,
+                'is_stock_unitario_variable' => $this->is_stock_unitario_variable,
+                'stock_aproximado_unidad' => $this->stock_aproximado_unidad,
+
+                'image'     => $this->image ? asset($this->image) : null,
             ],
             'relationships' => [
                 'ivaaliquot' => [
@@ -28,7 +33,15 @@ class StockproductResource extends JsonResource
                         'valor' => $this->ivaaliquot->valor,
                         'id_afip' => $this->ivaaliquot->id_afip
                     ]
-                ]
+                ],
+                'stockproductgroup' => $this->stockproductgroup ? [
+                    'id' => $this->stockproductgroup->id,
+                    'attributes' => [
+                        'name' => $this->stockproductgroup->name,
+                    ]
+                ] : null,
+                'saleproducts' => SaleproductResource::collection($this->saleproducts),
+                'purchaseproducts' => PurchaseproductResource::collection($this->purchaseproducts),
             ]
         ];
     }

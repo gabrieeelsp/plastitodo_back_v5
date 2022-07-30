@@ -20,10 +20,15 @@ class UserSeeder extends Seeder
             'email' => 'test@mail.com',
             'password' => bcrypt('secret999'),
 
+            'credito_disponible' => 1000,
+            'direccion' => 'Alicia morea de justo 666',
+
+            'nombre_fact' => 'La chota SA',
+
             'ivacondition_id' => 1,
             'doctype_id' => 1,
             'docnumber' => '20458967939',
-            'direccion' => 'Alicia morea de justo 6348',
+            'direccion_fact' => 'Alicia morea de justo 6348',
 
 
         ]);
@@ -43,12 +48,19 @@ class UserSeeder extends Seeder
 
             'role' => 3,
 
-            'ivacondition_id' => 2,
-            'doctype_id' => 3,
-            'docnumber' => '45896793',
-            'direccion' => 'Alicia morea de justo 6348',
-
-
         ]);
+
+        DB::table('users')->insert([
+            'name' => 'Pescaditos el Surubí SA',
+            'email' => 'pescadito@mail.com',
+            'password' => bcrypt('secret999'),
+
+            'role' => 3,
+
+            'tipo' => 'MINORISTA',
+
+            'tipo_persona' => 'JURIDICA',
+        ]);
+    
     }
 }

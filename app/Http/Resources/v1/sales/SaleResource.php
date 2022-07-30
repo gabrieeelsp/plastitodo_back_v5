@@ -18,7 +18,8 @@ class SaleResource extends JsonResource
             'id' => $this->id,
             'type' => 'sales',
             'attributes' => [
-                'created_at' => date('d M Y - H:i', $this->created_at->timestamp),
+                //'created_at' => date('d M Y - H:i', $this->created_at->timestamp),
+                'created_at' => $this->created_at,
                 'total' => $this->total
             ],
             'relationships' => [
@@ -29,10 +30,10 @@ class SaleResource extends JsonResource
                         'tipo' => $this->client->tipo
                     ],
                     'relationships' => [
-                        'modelofact' => $this->client->modelofact ? [
-                            'id' => $this->client->modelofact->id,
+                        'ivacondition' => $this->client->ivacondition ? [
+                            'id' => $this->client->ivacondition->id,
                             'attributes' => [
-                                'name' => $this->client->modelofact->name,
+                                'name' => $this->client->ivacondition->name,
                             ] 
                         ] : null,
                     ]

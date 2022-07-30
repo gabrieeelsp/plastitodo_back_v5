@@ -19,13 +19,18 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'surname',
         'email',
         'password',
-
         'direccion',
+        'telefono',
+        'nombre_fact',
+        'direccion_fact',
         'docnumber',
         'ivacondition_id',
-        'doctype_id'
+        'doctype_id',
+        'tipo',
+        'is_fact_default',
     ];
 
     /**
@@ -57,18 +62,18 @@ class User extends Authenticatable
         return $this->belongsTo(Doctype::class);
     }
 
-    public function modelofact()
+    public function tiene_informacion_fe()
     {
-        return $this->belongsTo(Modelofact::class);
-    }
-
-    public function is_enable_afip()
-    {
-        if(!$this->ivacondition){ return false; }
         if(!$this->doctype){ return false; }
         if(!$this->docnumber){ return false; }
-        if(!$this->direccion){ return false; }
-
+        if(!$this->direccion_fact){ return false; }
+        if($this->tipo_persona == 'JURIDICA' && !$this->nombre_fact) { return false; }
+        if($this->tipo_persona == 'FISICA' && !$this->surname) { return false; }
         return true;
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
     }
 }

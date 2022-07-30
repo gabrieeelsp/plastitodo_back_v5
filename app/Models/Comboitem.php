@@ -31,21 +31,26 @@ class Comboitem extends Model
     {
         $max_precio = 0;
         foreach($this->saleproducts as $saleproduct){
-            if($saleproduct->getPrecioMin() > $max_precio){
-                $max_precio = $saleproduct->getPrecioMin();
+            if ( $saleproduct->pivot->is_enable ) {
+                if($saleproduct->precio_min > $max_precio){
+                    $max_precio = $saleproduct->precio_min;
+                }
             }
         }
-        return round($max_precio * $this->cantidad, 4, PHP_ROUND_HALF_UP);
+        return round($max_precio * $this->cantidad, 6, PHP_ROUND_HALF_UP);
     }
 
     public function getPrecioMay()
     {
         $max_precio = 0;
         foreach($this->saleproducts as $saleproduct){
-            if($saleproduct->getPrecioMay() > $max_precio){
-                $max_precio = $saleproduct->getPrecioMay();
+            if ( $saleproduct->pivot->is_enable ) {
+                if($saleproduct->precio_may > $max_precio){
+                    $max_precio = $saleproduct->precio_may;
+                }
             }
+            
         }
-        return round($max_precio * $this->cantidad, 4, PHP_ROUND_HALF_UP);
+        return round($max_precio * $this->cantidad, 6, PHP_ROUND_HALF_UP);
     }
 }

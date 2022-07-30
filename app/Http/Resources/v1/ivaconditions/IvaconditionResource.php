@@ -22,7 +22,12 @@ class IvaconditionResource extends JsonResource
                 'name' => $this->name,
             ],
             'relationships' => [
-                'modelofacts' => ModelofactResource::collection($this->modelofacts)
+                'modelofact' =>  [
+                    "id" => $this->modelofact->id,
+                    "attributes" => [
+                        "name" => $this->modelofact->name
+                    ]
+                ]
             ]
         ];
     }

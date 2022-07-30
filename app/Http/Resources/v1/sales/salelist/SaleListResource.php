@@ -20,7 +20,8 @@ class SaleListResource extends JsonResource
             'id' => $this->id,
             'type' => 'sales',
             'attributes' => [
-                'created_at' => date('d M Y - H:i', $this->created_at->timestamp),
+                //'created_at' => date('d M Y - H:i', $this->created_at->timestamp),
+                'created_at' => $this->created_at,
                 'total' => $this->total
             ],
             'relationships' => [

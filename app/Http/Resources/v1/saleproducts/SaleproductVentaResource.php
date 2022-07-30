@@ -19,23 +19,28 @@ class SaleproductVentaResource extends JsonResource
             'type' => 'saleproducts',
             'attributes' => [
                 'name' => $this->name,
-                'porc_min' => $this->porc_min,
-                'porc_may' => $this->porc_may,
+                'precio_min' => $this->precio_min,
+                'precio_min' => $this->precio_min,
                 'relacion_venta_stock' => $this->relacion_venta_stock,
+
+                'desc_min' => $this->desc_min,
+                'desc_may' => $this->desc_may,
+                'fecha_desc_desde' => $this->fecha_desc_desde,
+                'fecha_desc_hasta' => $this->fecha_desc_hasta,
+
             ],
             'relationships' => [
                 'stockproduct' => [
-                    'data' => [
-                        'id' => $this->stockproduct_id,
-                        'type' => 'stockproducts',
-                        'attributes' => [
-                            'name' => $this->stockproduct->name,
-                            'costo' => $this->stockproduct->costo,
-                            'stock' => $this->stockproduct->getStockSucursal($request->get('sucursal')),
-                            'is_stock_unitario_kilo' => $this->stockproduct->is_stock_unitario_kilo,
-                            'stock_aproximado_unidad' => $this->stockproduct->stock_aproximado_unidad
-                        ]
+                    'id' => $this->stockproduct_id,
+                    'type' => 'stockproducts',
+                    'attributes' => [
+                        'name' => $this->stockproduct->name,
+                        'costo' => $this->stockproduct->costo,
+                        'stock' => $this->stockproduct->getStockSucursal($request->get('sucursal')),
+                        'is_stock_unitario_kilo' => $this->stockproduct->is_stock_unitario_kilo,
+                        'stock_aproximado_unidad' => $this->stockproduct->stock_aproximado_unidad
                     ]
+                    
                 ]
                 
             ]

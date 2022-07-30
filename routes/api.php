@@ -7,11 +7,13 @@ use App\Http\Controllers\api\v1\AuthController;
 
 use App\Http\Controllers\api\v1\StockproductController;
 use App\Http\Controllers\api\v1\SaleproductController;
+use App\Http\Controllers\api\v1\PurchaseproductController;
 use App\Http\Controllers\api\v1\ComboController;
 use App\Http\Controllers\api\v1\SaleController;
 use App\Http\Controllers\api\v1\IvaconditionController;
 use App\Http\Controllers\api\v1\DoctypeController;
 use App\Http\Controllers\api\v1\ClientController;
+use App\Http\Controllers\api\v1\SupplierController;
 use App\Http\Controllers\api\v1\EmpresaController;
 use App\Http\Controllers\api\v1\SucursalController;
 
@@ -30,6 +32,8 @@ use App\Http\Controllers\api\v1\UserController;
 use App\Http\Controllers\api\v1\CajaController;
 use App\Http\Controllers\api\v1\PaymentController;
 use App\Http\Controllers\api\v1\RefundController;
+
+use App\Http\Controllers\api\v1\PurchaseorderController;
 
 
 /*
@@ -51,9 +55,23 @@ Route::prefix('v1')->group(static function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
 
-    Route::resource('stockproducts', StockproductController::class)->only(['index']);
-    Route::resource('saleproducts', SaleproductController::class)->only(['index']);
+    Route::get('stockproducts/stock', [StockproductController::class,'get_stock']);
+    Route::resource('stockproducts', StockproductController::class)->only(['index', 'show', 'update', 'store']);
+
+    
+    Route::put('stockproducts/{id}/update_values', [StockproductController::class, 'update_values']);
+    Route::post('stockproducts/{id}/updload_image', [StockproductController::class, 'updload_image']);
+    Route::put('stockproducts/{id}/remove_image', [StockproductController::class, 'remove_image']);
+    Route::get('get_stockproducts_select', [StockproductController::class, 'get_stockproducts_select']);
+    Route::get('saleproducts/search_barcode', [SaleproductController::class, 'search_barcode']);
+    Route::resource('saleproducts', SaleproductController::class)->only(['index', 'show', 'update', 'store']);
+    Route::put('saleproducts/{id}/update_values', [SaleproductController::class, 'update_values']);
+    Route::post('saleproducts/{id}/updload_image', [SaleproductController::class, 'updload_image']);
+    Route::put('saleproducts/{id}/remove_image', [SaleproductController::class, 'remove_image']);
+    Route::resource('purchaseproducts', PurchaseproductController::class)->only(['index', 'show', 'update', 'store']);
+    
     Route::resource('combos', ComboController::class)->only(['index', 'show']);
+    Route::put('combos/{id}/update_values', [ComboController::class, 'update_values']);
 
     
 });
@@ -61,6 +79,8 @@ Route::prefix('v1')->group(static function () {
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+
+    Route::resource('purchaseorders', PurchaseorderController::class)->only(['index', 'show', 'update', 'destroy']);
 
     Route::resource('empresas', EmpresaController::class)->only(['index', 'show']);
     Route::resource('sucursals', SucursalController::class)->only(['index', 'show']);
@@ -71,6 +91,11 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::resource('ivaconditions', IvaconditionController::class)->only(['index']);
     Route::resource('doctypes', DoctypeController::class)->only(['index']);
     Route::resource('clients', ClientController::class)->only(['index', 'update', 'show']);
+    Route::post('suppliers/make_order', [SupplierController::class, 'make_order']);
+    Route::resource('suppliers', SupplierController::class)->only(['index', 'update', 'show']);
+    Route::get('get_suppliers_select', [SupplierController::class, 'get_suppliers_select']);
+    
+
     Route::resource('ivaaliquots', IvaaliquotController::class)->only(['index']);
     Route::resource('modelofacts', ModelofactController::class)->only(['index']);
 

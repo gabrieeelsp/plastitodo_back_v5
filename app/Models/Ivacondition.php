@@ -15,12 +15,12 @@ class Ivacondition extends Model
 
     public $timestamps = false;
 
-    public function modelofacts()
+    public function modelofact()
     {
-        return $this->belongsToMany(Modelofact::class);
+        return $this->belongsTo(Modelofact::class);
     }
 
-    public function accept_modelofact($modelofact_id)
+    /* public function accept_modelofact($modelofact_id)
     {
         foreach($this->modelofacts as $modelofact){
             if($modelofact->id == $modelofact_id){
@@ -28,5 +28,5 @@ class Ivacondition extends Model
             }
         }
         return false;
-    }
+    } */
 }

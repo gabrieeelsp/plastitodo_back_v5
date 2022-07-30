@@ -16,7 +16,8 @@ class CreateUsersTable extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('surname');
+            $table->string('surname')->nullable(); //solo si es una persona fisica, sino no lo muestro
+
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
@@ -27,18 +28,23 @@ class CreateUsersTable extends Migration
 
             $table->enum('tipo', ['MINORISTA','MAYORISTA'])->default('MINORISTA');
 
+            $table->enum('tipo_persona', ['FISICA','JURIDICA'])->default('FISICA'); // lo uso para definir si se va a guardar apellido
+
             //--- Client -------
-            $table->string('direccion')->nullable();
-            $table->string('telefono')->nullable();
+            $table->string('nombre_fact')->nullable(); //puede ser por ejemplo una escuela, que factura a nombre del ministerio
+            $table->string('direccion_fact')->nullable();
+            $table->boolean('is_fact_default')->default(false); // true -> se factura la condicion iva que tenga asignada
             $table->string('docnumber')->nullable();
 
-            $table->boolean('is_fact_default')->default(false);
+            $table->string('direccion')->nullable(); // se una por ejemplo como direccion de entrega
+            $table->string('telefono')->nullable(); 
+            
 
             $table->decimal('saldo', 15, 4)->default(0);
+            $table->decimal('credito_disponible', 15, 4)->default(0);
 
-            $table->foreignId('ivacondition_id')->nullable()->constrained('ivaconditions')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('doctype_id')->nullable()->constrained('doctypes')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('modelofact_id')->nullable()->constrained('modelofacts')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('ivacondition_id')->default(3)->constrained('ivaconditions')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('doctype_id')->default(4)->constrained('doctypes')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

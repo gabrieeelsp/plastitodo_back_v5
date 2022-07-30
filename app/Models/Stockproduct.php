@@ -10,7 +10,11 @@ class Stockproduct extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name'
+        'name',
+        'costo',
+        'is_stock_unitario_variable',
+        'stock_aproximado_unidad',
+        'ivaaliquot_id',
     ];
 
     public $timestamps = false;
@@ -18,6 +22,11 @@ class Stockproduct extends Model
     public function ivaaliquot()
     {
         return $this->belongsTo(Ivaaliquot::class);
+    }
+
+    public function stocksucursals ()
+    {
+        return $this->hasMany(Stocksucursal::class);
     }
 
     public function stockSucursales()
@@ -33,5 +42,21 @@ class Stockproduct extends Model
             }
             
         }
+        return 0;
+    }
+
+    public function saleproducts() 
+    {
+        return $this->hasMany(Saleproduct::class)->orderBy('name');
+    }
+    
+    public function stockproductgroup() 
+    {
+        return $this->belongsTo(Stockproductgroup::class);
+    }
+
+    public function purchaseproducts ()
+    {
+        return $this->hasMany(Purchaseproduct::class);
     }
 }

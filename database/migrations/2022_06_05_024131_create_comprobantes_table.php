@@ -39,8 +39,8 @@ class CreateComprobantesTable extends Migration
             $table->string('ivacondition_name_empresa');
             
             $table->string('condicion_venta');
-            $table->string('nombre_client')->nullable();
-            $table->string('domicilio_client')->nullable();
+            $table->string('nombre_fact_client')->nullable();
+            $table->string('direccion_fact_client')->nullable();
             $table->string('ivacondition_name_client')->nullable();
 
             $table->timestamps();
