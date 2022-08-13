@@ -15,9 +15,9 @@ class StockproductgroupSeeder extends Seeder
      */
     public function run()
     {
-        Stockproductgroup::factory()->count(100)->create();
-        /* DB::table('stockproductgroups')->insert([ //4
+        //Stockproductgroup::factory()->count(100)->create();
+        DB::table('stockproductgroups')->insert([ //4
             'name' => 'Alfajor 38g GUAYMALLEN UNIDAD',
-        ]); */
+        ]);
     }
 }

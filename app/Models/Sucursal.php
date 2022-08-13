@@ -9,6 +9,14 @@ class Sucursal extends Model
 {
     use HasFactory;
 
+    public $fillable = [
+        'name',
+        'direccion', 
+        'punto_venta_fe',
+        'telefono',
+        'telefono_movil'
+    ];
+
     public $timestamps = false;
 
     public function empresa()

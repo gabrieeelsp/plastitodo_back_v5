@@ -18,6 +18,10 @@ class SupplierSeeder extends Seeder
 
         DB::table('suppliers')->insert([ // 1
             'name' => "Movipack",
+            'direccion' => 'Zevallos 3421',
+            'telefono' => '34212344',
+            'telefono_movil' => '341432211',
+            'email' => 'contacto@movipack.com.ar'
         ]);
 
         DB::table('suppliers')->insert([ // 2

@@ -11,6 +11,11 @@ class Tag extends Model
 
     public $timestamps = false;
 
+    public $fillable = [
+        'name',
+        'color',
+    ];
+
     public function users()
     {
         return $this->belongsToMany(User::class);

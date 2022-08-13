@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use App\Http\Resources\v1\suppliers\SupplierResource;
 use App\Http\Resources\v1\purchaseorders\PurchaseorderResource;
 
+use App\Http\Requests\v1\suppliers\CreateSupplierRequest;
+
 use Illuminate\Support\Facades\DB;
 
 class SupplierController extends Controller
@@ -30,8 +32,7 @@ class SupplierController extends Controller
         $atr_name = [];
 
         foreach ($val as $q) {
-            array_push($atr_name, ['name', 'LIKE', '%'.strtolower($q).'%'] );
-            
+            array_push($atr_name, ['name', 'LIKE', '%'.strtolower($q).'%'] );            
         };
 
         $limit = 5;
@@ -50,10 +51,8 @@ class SupplierController extends Controller
                     
                     return SupplierResource::collection($suppliers);
 
-            }
-            
-        }
-        
+            }            
+        }        
         
         $suppliers = Supplier::orderBy('name', 'ASC')
             ->orWhere($atr_name)
@@ -68,11 +67,16 @@ class SupplierController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateSupplierRequest $request)
     {
-        //
-    }
+        $data = $request->get('data');
 
+        $supplier = Supplier::create($request->input('data.attributes'));
+
+        $supplier->save();
+
+        return new SupplierResource($supplier);
+    }
     /**
      * Display the specified resource.
      *
@@ -151,11 +155,13 @@ class SupplierController extends Controller
         $purchaseorder->save();
         $orderitems = [];
         foreach( $supplier->purchaseproducts as $purchaseproduct ) {
-            $orderitem = Purchaseorderitem::create();
-            $orderitem->purchaseproduct()->associate($purchaseproduct->id);
-            $orderitem->purchaseorder()->associate($purchaseorder->id);
-            $orderitem->save();
-
+            if ( $purchaseproduct->is_enable ) {
+                $orderitem = Purchaseorderitem::create();
+                $orderitem->purchaseproduct()->associate($purchaseproduct->id);
+                $orderitem->purchaseorder()->associate($purchaseorder->id);
+                $orderitem->save();    
+            }
+            
         }
 
         return new PurchaseorderResource($purchaseorder);

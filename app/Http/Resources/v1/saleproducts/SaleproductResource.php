@@ -62,6 +62,7 @@ class SaleproductResource extends JsonResource
                             'name' => $this->saleproductgroup->name,
                         ]
                     ] : null,
+                    'tags' => SaleproductTagResource::collection($this->tags),
             ]
         ];
     }

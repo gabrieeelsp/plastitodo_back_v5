@@ -61,6 +61,8 @@ class ClientResource extends JsonResource
                         'name' => $this->doctype->name,
                     ] 
                 ] : null,
+
+                'tags' => ClientTagResource::collection($this->tags),
                 
             ]
         ]; 

@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 
 use App\Http\Resources\v1\sucursals\SucursalResource;
 
+use App\Http\Requests\v1\sucursals\CreateSucursalRequest;
+
 class SucursalController extends Controller
 {
     /**
@@ -43,9 +45,17 @@ class SucursalController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateSucursalRequest $request)
     {
-        //
+        $data = $request->get('data');
+        $empresa_id = $data['relationships']["empresa"]["data"]["id"];
+
+        $sucursal = Sucursal::create($request->input('data.attributes'));
+
+        $sucursal->empresa()->associate($empresa_id);
+        $sucursal->save();
+
+        return new SucursalResource($sucursal);
     }
 
     /**
@@ -68,7 +78,11 @@ class SucursalController extends Controller
      */
     public function update(Request $request, Sucursal $sucursal)
     {
-        //
+        $sucursal->update($request->input('data.attributes'));
+
+        $sucursal->save();
+
+        return new SucursalResource($sucursal);
     }
 
     /**

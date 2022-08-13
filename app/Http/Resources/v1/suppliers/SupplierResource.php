@@ -19,6 +19,10 @@ class SupplierResource extends JsonResource
             'type' => 'suppliers',
             'attributes' => [
                 'name' => $this->name,
+                'direccion' => $this->direccion,
+                'telefono' => $this->telefono,
+                'telefono_movil' => $this->telefono_movil,
+                'email' => $this->email,
             ],
             'relationships' => [
                 'purchaseproducts' => PurchaseproductResource::collection($this->purchaseproducts),

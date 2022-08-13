@@ -37,6 +37,8 @@ class StockproductSeeder extends Seeder
             'costo' => 12.5,
 
             'stockproductgroup_id' => 1,
+
+            'familia_id' => 2,
         ]);
         
         DB::table('stocksucursals')->insert([
@@ -80,8 +82,8 @@ class StockproductSeeder extends Seeder
             'desc_min' => 10,
             'desc_may' => 5,
 
-            'fecha_desc_desde' => new Carbon('2022-07-08'),
-            'fecha_desc_hasta' => new Carbon('2022-07-10 23:59'),
+            'fecha_desc_desde' => new Carbon('2022-08-08'),
+            'fecha_desc_hasta' => new Carbon('2022-09-10 23:59'),
         ]);
 
         DB::table('purchaseproducts')->insert([ // 1
@@ -97,7 +99,9 @@ class StockproductSeeder extends Seeder
             'name' => 'Alfajor 38g Negro GUAYMALLEN UNIDAD',
             'ivaaliquot_id' => 4,
             'costo' => 12.5,
+
             'stockproductgroup_id' => 1,
+            'familia_id' => 2,
         ]);
         
         DB::table('stocksucursals')->insert([
@@ -143,7 +147,7 @@ class StockproductSeeder extends Seeder
             'desc_may' => 0,
 
             'fecha_desc_desde' => new Carbon('2022-07-08'),
-            'fecha_desc_hasta' => new Carbon('2022-07-10 23:59'),
+            'fecha_desc_hasta' => new Carbon('2022-09-10 23:59'),
         ]);
 
         DB::table('purchaseproducts')->insert([ // 1
@@ -158,7 +162,9 @@ class StockproductSeeder extends Seeder
         DB::table('stockproducts')->insert([
             'name' => 'Chupetin Pelotitas LHERITIER PAQx50',
             'ivaaliquot_id' => 4,
-            'costo' => 220
+            'costo' => 220,
+
+            'familia_id' => 2,
         ]);
         
         DB::table('stocksucursals')->insert([
@@ -189,7 +195,7 @@ class StockproductSeeder extends Seeder
         ]);
 
         DB::table('purchaseproducts')->insert([ // 1
-            'stockproduct_id' => 1,
+            'stockproduct_id' => 3,
             'name' => 'Chupetin Pelotitas LHERITIER Caja x12PAQ',
             'relacion_compra_stock' => 12,
 
@@ -241,7 +247,9 @@ class StockproductSeeder extends Seeder
         DB::table('stockproducts')->insert([
             'name' => 'Harina de Trigo PAGx1Kg',
             'ivaaliquot_id' => 3,
-            'costo' => 90
+            'costo' => 90,
+
+            'familia_id' => 2,
         ]);
         
         DB::table('stocksucursals')->insert([
@@ -341,7 +349,9 @@ class StockproductSeeder extends Seeder
         DB::table('stockproducts')->insert([
             'name' => 'Dulce de Leche EUREKA 10Kg UNIDAD',
             'ivaaliquot_id' => 4,
-            'costo' => 2800
+            'costo' => 2800,
+
+            'familia_id' => 2,
         ]);
 
         DB::table('stocksucursals')->insert([
@@ -392,7 +402,8 @@ class StockproductSeeder extends Seeder
         DB::table('stockproducts')->insert([
             'name' => 'Tapita de Alfajor FANTOCHE CAJAx3,50Kg',
             'ivaaliquot_id' => 4,
-            'costo' => 850
+            'costo' => 850,
+            'familia_id' => 2,
         ]);
 
         DB::table('stocksucursals')->insert([
@@ -444,7 +455,8 @@ class StockproductSeeder extends Seeder
         DB::table('stockproducts')->insert([
             'name' => 'Grana Azul DECORMAGIC PAQx1Kg',
             'ivaaliquot_id' => 4,
-            'costo' => 240
+            'costo' => 240,
+            'familia_id' => 2,
         ]);
 
         DB::table('stocksucursals')->insert([
@@ -496,6 +508,8 @@ class StockproductSeeder extends Seeder
             'name' => 'Papel Prensa en rollo 40cm UNIDAD',
             'ivaaliquot_id' => 4,
             'costo' => 210,
+
+            'familia_id' => 2,
 
             'is_stock_unitario_variable' => true,
             'stock_aproximado_unidad' => 6,

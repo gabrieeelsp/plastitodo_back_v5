@@ -21,6 +21,8 @@ class SucursalResource extends JsonResource
                 'name' => $this->name,
                 'direccion' => $this->direccion,
                 'punto_venta_fe' => $this->punto_venta_fe,
+                'telefono' => $this->telefono,
+                'telefono_movil' => $this->telefono_movil,
             ]
              ,
             'relationships' => [

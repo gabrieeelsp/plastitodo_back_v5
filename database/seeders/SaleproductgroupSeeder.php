@@ -17,13 +17,14 @@ class SaleproductgroupSeeder extends Seeder
      */
     public function run()
     {
-        Saleproductgroup::factory()->count(100)->create();
-        /* DB::table('saleproductgroups')->insert([ //4
+        //Saleproductgroup::factory()->count(100)->create();
+
+        DB::table('saleproductgroups')->insert([ //4
             'name' => 'Alfajor 38g GUAYMALLEN UNIDAD',
         ]);
 
         DB::table('saleproductgroups')->insert([ //4
             'name' => 'Alfajor 38g GUAYMALLEN CAJA x40',
-        ]); */
+        ]);
     }
 }

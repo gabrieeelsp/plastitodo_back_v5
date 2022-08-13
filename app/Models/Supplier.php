@@ -11,6 +11,10 @@ class Supplier extends Model
 
     protected $fillable = [
         'name',
+        'direccion',
+        'telefono',
+        'telefono_movil',
+        'email'
     ];
 
     public $timestamps = false;

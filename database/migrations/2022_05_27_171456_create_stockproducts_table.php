@@ -25,7 +25,10 @@ class CreateStockproductsTable extends Migration
 
             $table->foreignId('ivaaliquot_id')->nullable()->constrained('ivaaliquots')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('stockproductgroup_id')->nullable()->constrained('stockproductgroups')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('familia_id')->nullable()->constrained('familias')->onUpdate('cascade')->onDelete('cascade');
+
         });
+        
     }
 
     /**

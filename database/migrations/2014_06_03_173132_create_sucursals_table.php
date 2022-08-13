@@ -18,10 +18,12 @@ class CreateSucursalsTable extends Migration
             
             $table->string('name');
             $table->string('direccion')->nullable();
-
+            $table->string('telefono')->nullable();
+            $table->string('telefono_movil')->nullable();
+            
             $table->integer('punto_venta_fe')->nullable();
 
-            $table->foreignId('empresa_id')->constrained('empresas')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('empresa_id')->nullable()->constrained('empresas')->onUpdate('cascade')->onDelete('cascade');
 
         });
     }

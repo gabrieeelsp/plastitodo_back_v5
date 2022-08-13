@@ -5,11 +5,19 @@ namespace App\Http\Controllers\api\v1;
 use App\Http\Controllers\Controller;
 use App\Models\Purchaseorder;
 use App\Models\Purchaseorderitem;
+
+use App\Models\Stockmovement;
+use App\Models\Stockmovementitem;
+
+use App\Models\Stocksucursal;
+
 use Illuminate\Http\Request;
 
 use App\Http\Resources\v1\purchaseorders\PurchaseorderListResource;
 
 use App\Http\Resources\v1\purchaseorders\PurchaseorderResource;
+
+use App\Http\Resources\v1\stockmovements\StockmovementResource;
 
 use Illuminate\Support\Facades\DB;
 
@@ -76,7 +84,7 @@ class PurchaseorderController extends Controller
     public function show(Purchaseorder $purchaseorder)
     {
         
-
+        if ( $purchaseorder->estado != 'RECIBIDO' ) {
             $purchaseproducts = clone $purchaseorder->supplier->purchaseproducts;
             
             $ids_delete = [];
@@ -105,6 +113,12 @@ class PurchaseorderController extends Controller
             }
 
             return new PurchaseorderResource(Purchaseorder::find($purchaseorder->id));
+        }
+
+        return new PurchaseorderResource($purchaseorder);
+            
+
+        
 
         
 
@@ -112,7 +126,7 @@ class PurchaseorderController extends Controller
 
         //return new PurchaseorderResource($purchaseorder);
 
-        $purchaseproducts = clone $purchaseorder->supplier->purchaseproducts;
+        //$purchaseproducts = clone $purchaseorder->supplier->purchaseproducts;
 
         
 
@@ -138,6 +152,8 @@ class PurchaseorderController extends Controller
      */
     public function update(Request $request, Purchaseorder $purchaseorder)
     {
+
+        $is_confirmar = $request->get('data')['meta']['is_confirmar'];
         
         try {
             DB::beginTransaction();
@@ -150,13 +166,82 @@ class PurchaseorderController extends Controller
                 $purchaseorderitem->save();
             }
 
+
+            if ( $request->has('data.relationships.sucursal')) { 
+                if ( $request->get('data')['relationships']['sucursal'] != null ) {
+                    $purchaseorder->sucursal()->associate($request->get('data')['relationships']['sucursal']['id']);
+                }
+                
+            }
+
+            $purchaseorder->save();
+
+
+            if ( $is_confirmar ) {
+
+                foreach ( $purchaseorder->purchaseorderitems as $purchaseorderitem_delete ) {
+                    if ( $purchaseorderitem_delete->cantidad == 0 ) {
+                        $purchaseorderitem_delete->delete();
+                    }
+                }
+
+                $purchaseorder->estado = 'RECIBIDO';
+
+                $stockmovement = Stockmovement::create();
+                $stockmovement->user()->associate(auth()->user()->id);
+                $stockmovement->sucursal()->associate($purchaseorder->sucursal->id);
+                $stockmovement->tipo = 'INGRESO';
+                $stockmovement->estado = 'CONFIRMADO';
+                $stockmovement->save();
+
+                foreach ( $purchaseorder->purchaseorderitems as $poi ) {
+                    if ( $poi->cantidad > 0 ) {
+                        $stockmovementitem = Stockmovementitem::create();
+                        $stockmovementitem->stockmovement()->associate($stockmovement->id);
+                        $stockproduct = $poi->purchaseproduct->stockproduct;
+                        $stockmovementitem->stockproduct()->associate($stockproduct->id);
+                        $stockmovementitem->cantidad = round($poi->cantidad * $poi->purchaseproduct->relacion_compra_stock, 6, PHP_ROUND_HALF_UP);
+                        $stockmovementitem->save();
+
+                        
+                        //---actualiza stock
+                        $existe_stockSucursal = false;
+                        foreach ( $stockproduct->stocksucursals as $stocksucursal ) {
+                            if ( $stocksucursal->sucursal_id == $stockmovement->sucursal_id ) {
+                                $existe_stockSucursal = true;
+                                $stocksucursal->stock = $stocksucursal->stock + $stockmovementitem->cantidad;
+                                $stocksucursal->save();
+
+                            }
+                        }
+                        if ( !$existe_stockSucursal ) {
+                            $stocksucursal_nuevo = Stocksucursal::create();
+                            $stocksucursal_nuevo->stockproduct()->associate($stockproduct->id);
+                            $stocksucursal_nuevo->sucursal()->associate($stockmovement->sucursal_id);
+                            $stocksucursal_nuevo->stock = $stockmovementitem->cantidad;
+                            $stocksucursal_nuevo->save();
+
+                        }
+
+
+                        //actiualizo stock
+                    }
+                    
+
+
+                }
+               
+
+            }
+            $purchaseorder->save();
+
             DB::commit();
         }catch(\Exception $e){
             DB::rollback();
             return $e;
         }
 
-        return new PurchaseorderResource($purchaseorder);
+        return new PurchaseorderResource(Purchaseorder::find($purchaseorder->id));
     }
 
     /**

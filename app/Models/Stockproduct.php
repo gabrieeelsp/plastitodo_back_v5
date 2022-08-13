@@ -45,6 +45,14 @@ class Stockproduct extends Model
         return 0;
     }
 
+    public function getStockTotal() {
+        $stock = 0;
+        foreach ( $this->stockSucursales as $stockSucursal) {
+            $stock = $stock + $stockSucursal->stock;
+        }
+        return round($stock, 4, PHP_ROUND_HALF_UP);
+    }
+
     public function saleproducts() 
     {
         return $this->hasMany(Saleproduct::class)->orderBy('name');
@@ -58,5 +66,10 @@ class Stockproduct extends Model
     public function purchaseproducts ()
     {
         return $this->hasMany(Purchaseproduct::class);
+    }
+
+    public function familia() 
+    {
+        return $this->belongsTo(Familia::class);
     }
 }

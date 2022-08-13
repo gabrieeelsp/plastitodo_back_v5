@@ -31,6 +31,7 @@ class User extends Authenticatable
         'doctype_id',
         'tipo',
         'is_fact_default',
+        'tipo_persona',
     ];
 
     /**

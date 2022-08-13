@@ -7,8 +7,13 @@ use App\Models\User;
 use Illuminate\Http\Request;
 
 use App\Http\Requests\v1\clients\UpdateClientRequest;
+use App\Http\Requests\v1\clients\CreateClientRequest;
 
 use App\Http\Resources\v1\clients\ClientResource;
+
+use Illuminate\Support\Facades\Hash;
+
+use Illuminate\Support\Facades\DB;
 
 class ClientController extends Controller
 {
@@ -74,9 +79,15 @@ class ClientController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateClientRequest $request)
     {
-        //
+        $data = $request->get('data');
+
+        $client = User::create(array_merge($request->input('data.attributes'), ['password' => Hash::make('123456')]));
+
+        $client->save();
+
+        return new ClientResource($client);
     }
 
     /**
@@ -101,23 +112,37 @@ class ClientController extends Controller
     public function update(Request $request, $user_id)
     {
         //return $request->all();
+        try {
+            DB::beginTransaction();
 
-        $user = User::findOrFail($user_id);
+            $user = User::findOrFail($user_id);
 
-        //return $request->input('data.attributes');
-        $user->update($request->input('data.attributes'));
+            //return $request->input('data.attributes');
+            $user->update($request->input('data.attributes'));
 
-        if ( $request->has('data.relationships.ivacondition')) {
-            $user->ivacondition_id = $request->get('data')['relationships']['ivacondition']['id'];
+            if ( $request->has('data.relationships.ivacondition')) {
+                $user->ivacondition_id = $request->get('data')['relationships']['ivacondition']['id'];
+            }
+
+            if ( $request->has('data.relationships.doctype')) {
+                $user->doctype_id = $request->get('data')['relationships']['doctype']['id'];
+            }
+
+
+            $user->tags()->detach();
+            foreach ( $request->get('data')['relationships']['tags'] as $tag ) {
+                $user->tags()->attach($tag['id']);
+            }
+
+            $user->save();
+
+            DB::commit();
+            return new ClientResource($user);
+            
+        }catch(\Exception $e){
+            DB::rollback();
+            return $e;
         }
-
-        if ( $request->has('data.relationships.doctype')) {
-            $user->doctype_id = $request->get('data')['relationships']['doctype']['id'];
-        }
-
-        $user->save();
-
-        return new ClientResource($user);
     }
 
     /**

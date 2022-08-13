@@ -9,6 +9,10 @@ class Saleproductgroup extends Model
 {
     use HasFactory;
 
+    public $fillable = [
+        'name'
+    ];
+
     public $timestamps = false;
 
     public function saleproducts()

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources\v1;
+namespace App\Http\Resources\v1\saleproductgroups;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CreateSaleproductResouce extends JsonResource
+class SaleproductgroupResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,6 +14,11 @@ class CreateSaleproductResouce extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'attributes' => [
+                'name' => $this->name,
+            ],
+        ];
     }
 }

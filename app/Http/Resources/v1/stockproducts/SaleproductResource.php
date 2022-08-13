@@ -27,6 +27,14 @@ class SaleproductResource extends JsonResource
                 'porc_may' => $this->porc_may,
                 'precision_may' => $this->precision_may,
             ],
+            'relationships' => [
+                'saleproductgroup' => $this->saleproductgroup ? [
+                    'id' => $this->saleproductgroup->id,
+                    'attributes' => [
+                        'name' => $this->saleproductgroup->name,
+                    ]
+                ] : null,
+            ]
         ];
     }
 }

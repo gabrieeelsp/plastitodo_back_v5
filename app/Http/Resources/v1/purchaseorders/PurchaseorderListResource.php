@@ -39,6 +39,9 @@ class PurchaseorderListResource extends JsonResource
                     'type' => 'suppliers',
                     'attributes' => [
                         'name' => $this->supplier->name,
+                        'direccion' => $this->supplier->direccion,
+                        'telefono' => $this->supplier->telefono,
+                        'email' => $this->supplier->email,
                     ]                    
                 ],
                 

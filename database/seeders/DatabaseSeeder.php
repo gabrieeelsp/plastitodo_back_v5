@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Saleproduct;
 use App\Models\Stockproduct;
 use App\Models\Sucursal;
+use App\Models\User;
 
 use Illuminate\Support\Facades\DB;
 
@@ -19,6 +20,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $this->call(TagSeeder::class);
+        $this->call(FamiliaSeeder::class);
         $this->call(ModelofactSeeder::class);
         $this->call(IvaconditionSeeder::class);
         $this->call(EmpresaSeeder::class);
@@ -43,6 +46,8 @@ class DatabaseSeeder extends Seeder
         $this->call(StockproductSeeder::class);
         $this->call(ComboSeeder::class);
 
+        
+
         //$this->call(SaleSeeder::class);
 
 
@@ -63,5 +68,10 @@ class DatabaseSeeder extends Seeder
             $saleproduct->set_precios($saleproduct->stockproduct->costo);
             $saleproduct->save();
         }
+
+
+        $astor = User::find(3);
+        $astor->tags()->attach(1);
+        $astor->save();
     }
 }

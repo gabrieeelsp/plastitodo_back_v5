@@ -243,6 +243,14 @@ class SaleproductController extends Controller
 
             $saleproduct->update($request->input('data.attributes')); 
 
+            if ( $request->has('data.relationships.saleproductgroup')) { 
+                if ( $request->get('data')['relationships']['saleproductgroup']['id'] != 0 ) { 
+                    $saleproduct->saleproductgroup_id = $request->get('data')['relationships']['saleproductgroup']['id'];
+                }else {
+                    $saleproduct->saleproductgroup_id = null;
+                }   
+            }
+
             $saleproduct->save();
             $saleproduct_saved = Saleproduct::find($saleproduct->id);
             $saleproduct_saved->set_precios($saleproduct->stockproduct->costo);
@@ -260,6 +268,14 @@ class SaleproductController extends Controller
                 $combo->setPrecios();
                 $combo->save();
             }
+
+            if ( $request->has('data.relationships.tags')) {
+                $saleproduct->tags()->detach();
+                foreach ( $request->get('data')['relationships']['tags'] as $tag ) {
+                    $saleproduct->tags()->attach($tag['id']);
+                }
+            }
+            
 
             
 

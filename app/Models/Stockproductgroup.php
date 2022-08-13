@@ -9,6 +9,10 @@ class Stockproductgroup extends Model
 {
     use HasFactory;
 
+    public $fillable = [
+        'name'
+    ];
+
     public $timestamps = false;
 
     public function stockproducts()

@@ -31,7 +31,9 @@ class PurchaseorderResource extends JsonResource
                 'sucursal' => $this->sucursal ? [
                     'id' => $this->sucursal->id,
                     'attributes' => [
-                        'name' => $this->sucursal->name
+                        'name' => $this->sucursal->name,
+                        'direccion' => $this->sucursal->direccion,
+                        'telefono' => $this->sucursal->telefono,
                     ],
                 ] : null,
                 'supplier' => [
@@ -39,6 +41,9 @@ class PurchaseorderResource extends JsonResource
                     'type' => 'suppliers',
                     'attributes' => [
                         'name' => $this->supplier->name,
+                        'direccion' => $this->supplier->direccion,
+                        'telefono' => $this->supplier->telefono,
+                        'email' => $this->supplier->email,
                     ]                    
                 ],
                 'purchaseorderitems' => PurchaseorderitemResource::collection($this->purchaseorderitems), 

@@ -119,6 +119,14 @@ class StockproductController extends Controller
                 $stockproduct->ivaaliquot_id = $request->get('data')['relationships']['ivaaliquot']['id'];
             }
 
+            if ( $request->has('data.relationships.stockproductgroup')) {
+                if ( $request->get('data')['relationships']['stockproductgroup']['id'] != 0 ) {
+                    $stockproduct->stockproductgroup_id = $request->get('data')['relationships']['stockproductgroup']['id'];
+                }else {
+                    $stockproduct->stockproductgroup_id = null;
+                }   
+            }
+
             foreach ( $stockproduct->saleproducts as $itemSaleproduct ) {
                 $itemSaleproduct->set_precios($request->get('data')['attributes']['costo']);
                 $itemSaleproduct->save();
