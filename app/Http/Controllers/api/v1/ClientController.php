@@ -31,8 +31,8 @@ class ClientController extends Controller
         $atr_name = [];
 
         foreach ($val as $q) {
-            array_push($atr_name, ['name', 'LIKE', '%'.strtolower($q).'%'] );
-            array_push($atr_surname, ['surname', 'LIKE', '%'.strtolower($q).'%'] );
+            array_push($atr_name, [DB::raw('CONCAT(name, " ",surname)'), 'LIKE', '%'.strtolower($q).'%'] );
+            //array_push($atr_surname, ['surname', 'LIKE', '%'.strtolower($q).'%'] );
             
         };
 
@@ -56,8 +56,8 @@ class ClientController extends Controller
             
             if ( $paginate == 0 ) { 
                 $users = User::orderBy('name', 'ASC')
-                    ->where($atr_name)
-                    ->orWhere($atr_surname)->get();
+                    ->where($atr_name)->get();
+                    //->orWhere($atr_surname)->get();
                     
                     return ClientResource::collection($users);
 

@@ -123,7 +123,8 @@ Route::middleware(['auth:sanctum', 'cors'])->prefix('v1')->group(function () {
 
     Route::resource('paymentmethods', PaymentmethodController::class)->only(['index']);
 
-    Route::resource('users', UserController::class)->only(['index']);
+    Route::resource('users', UserController::class)->only(['index', 'store', 'show', 'update']);
+    Route::put('users/{id}/update_password', [UserController::class, 'update_password']);
 
     Route::get('cajas/find/{id}', [CajaController::class, 'find']);
     Route::resource('payments', PaymentController::class)->only(['store']);

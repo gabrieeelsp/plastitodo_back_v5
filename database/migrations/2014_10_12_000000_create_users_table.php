@@ -24,7 +24,8 @@ class CreateUsersTable extends Migration
             $table->rememberToken();
             $table->timestamps();
 
-            $table->tinyInteger('role')->default(1);
+            //$table->tinyInteger('role')->default(1);
+            $table->enum('role', ['ADMINISTRADOR','RESPONSABLE SUCURSAL', 'VENDEDOR'])->nullable();
 
             $table->enum('tipo', ['MINORISTA','MAYORISTA'])->default('MINORISTA');
 
