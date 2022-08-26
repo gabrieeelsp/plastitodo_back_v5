@@ -18,7 +18,8 @@ class DebitnoteSaleResource extends JsonResource
             'id' => $this->id,
             'type' => 'debitnotes',
             'attributes' => [
-                'created_at' => date('d M Y - H:i', $this->created_at->timestamp),
+                //'created_at' => date('d M Y - H:i', $this->created_at->timestamp),
+                'created_at' => $this->created_at,
                 'total' => $this->total
             ],
             'relationships' => [

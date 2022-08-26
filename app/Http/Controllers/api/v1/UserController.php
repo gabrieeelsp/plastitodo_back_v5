@@ -32,6 +32,11 @@ class UserController extends Controller
         $atr_surname = [];
         $atr_name = [];
 
+        $limit = 5;
+        if($request->has('limit')){
+            $limit = $request->get('limit');
+        }
+
         foreach ($val as $q) {
             array_push($atr_name, [DB::raw('CONCAT(name, " ",surname)'), 'LIKE', '%'.strtolower($q).'%'] );
             //array_push($atr_surname, ['surname', 'LIKE', '%'.strtolower($q).'%'] );

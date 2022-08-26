@@ -43,6 +43,8 @@ class CreateSaleproductsTable extends Migration
             $table->string('image2')->nullable();
 
             $table->string('image3')->nullable();
+
+            $table->boolean('is_enable_web')->default(false);
             
 
             $table->foreignId('stockproduct_id')->nullable()->constrained('stockproducts')->onUpdate('cascade')->onDelete('cascade');

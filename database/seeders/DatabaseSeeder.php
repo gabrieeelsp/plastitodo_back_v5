@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $this->call(ValorSeeder::class);
         $this->call(TagSeeder::class);
         $this->call(FamiliaSeeder::class);
         $this->call(ModelofactSeeder::class);

@@ -298,17 +298,46 @@ class SaleproductController extends Controller
         //
     }
 
+    public function get_saleproducts_select(Request $request)
+    {
+
+        $searchText = trim($request->get('q'));
+        $val = explode(' ', $searchText );
+        $atr = [];
+        foreach ($val as $q) {
+            array_push($atr, ['name', 'LIKE', '%'.strtolower($q).'%'] );
+        };
+
+        $limit = 10;
+        if($request->has('limit')){
+            $limit = $request->get('limit');
+        }
+
+        $saleproducts = DB::table('saleproducts')
+                            ->where($atr)
+                            ->select(
+                                'saleproducts.name',
+                                'saleproducts.id',
+                                'saleproducts.image1',
+                            )
+                            ->orderBy('name', 'ASC')
+                            ->paginate($limit);
+        return $saleproducts;
+    }
+
     public function get_sale_products_venta(Request $request)
     {
 
         $searchText = trim($request->get('q'));
         $val = explode(' ', $searchText );
         $atr_saleproduct = [];
+        array_push($atr_saleproduct, ['saleproducts.is_enable', 1]);
         foreach ($val as $q) {
             array_push($atr_saleproduct, ['saleproducts.name', 'LIKE', '%'.strtolower($q).'%'] );
         };
 
         $atr_combo = [];
+        array_push($atr_combo, ['combos.is_enable', 1]);
         foreach ($val as $q) {
             array_push($atr_combo, ['combos.name', 'LIKE', '%'.strtolower($q).'%'] );
         };
@@ -369,9 +398,9 @@ class SaleproductController extends Controller
                                 'combos.precio_min as fecha_desc_desde',
                                 'combos.precio_min as fecha_desc_hasta',
 
-                                'combos.image1',
-                                'combos.image2',
-                                'combos.image3',
+                                'combos.image as image1',
+                                'combos.image as image2',
+                                'combos.image as image3',
                             )
                             ->addSelect(DB::raw("'combo' as tipo"))
                             ->unionall($saleproducts)

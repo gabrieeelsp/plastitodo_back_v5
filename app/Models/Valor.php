@@ -5,12 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Familia extends Model
+class Valor extends Model
 {
     use HasFactory;
 
-    public $fillable = [
-        'name'
+    protected $fillable = [
+        'name',
+        'valor',
     ];
 
     public $timestamps = false;

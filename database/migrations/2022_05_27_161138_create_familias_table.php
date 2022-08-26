@@ -16,6 +16,8 @@ class CreateFamiliasTable extends Migration
         Schema::create('familias', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+
+            $table->string('image')->nullable();
         });
     }
 

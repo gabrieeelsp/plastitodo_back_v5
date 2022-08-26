@@ -9,7 +9,27 @@ class Comboitem extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'cantidad'
+    ];
+
     public $timestamps = false;
+
+    public function combo()
+    {
+        return $this->belongsTo(Combo::class);
+    }
+
+    public function is_configuration_ok () 
+    {
+        foreach ( $this->saleproducts as $saleproduct ) {
+            if ( $saleproduct->pivot->is_enable ) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public function saleproducts()
     {

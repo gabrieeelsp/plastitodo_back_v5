@@ -28,6 +28,10 @@ class SaleproductVentaResource extends JsonResource
                 'fecha_desc_desde' => $this->fecha_desc_desde,
                 'fecha_desc_hasta' => $this->fecha_desc_hasta,
 
+                'image1'     => $this->image1 ? asset($this->image1) : null,
+                'image2'     => $this->image2 ? asset($this->image2) : null,
+                'image3'     => $this->image3 ? asset($this->image3) : null,
+
             ],
             'relationships' => [
                 'stockproduct' => [

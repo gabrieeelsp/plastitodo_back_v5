@@ -20,6 +20,7 @@ class SaleproductResource extends JsonResource
                 'name' => $this->name,
                 'relacion_venta_stock' => $this->relacion_venta_stock,
                 'is_enable' => $this->is_enable,
+                'is_enable_web' => $this->is_enable_web,
 
                 'porc_min' => $this->porc_min,
                 'precision_min' => $this->precision_min,

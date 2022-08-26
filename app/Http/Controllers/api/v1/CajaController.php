@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Caja;
 use Illuminate\Http\Request;
 use App\Http\Resources\v1\cajas\CajaResource;
+use App\Http\Resources\v1\cajas\CajaMinResource;
+
+use Carbon\Carbon;
 
 class CajaController extends Controller
 {
@@ -27,7 +30,17 @@ class CajaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->get('data');
+        $caja = Caja::create([
+            'dinero_inicial' => $data['dinero_inicial'],
+        ]);
+
+        $caja->user()->associate(auth()->user()->id);
+        $caja->sucursal()->associate($data['sucursal_id']);
+
+        $caja->save();
+
+        return new CajaMinResource(Caja::find($caja->id));
     }
 
     /**
@@ -38,7 +51,7 @@ class CajaController extends Controller
      */
     public function show(Caja $caja)
     {
-        //
+        return new CajaResource($caja);
     }
 
     /**
@@ -75,7 +88,7 @@ class CajaController extends Controller
 
         $caja = Caja::where($atr)->firstOrFail();
 
-        return new CajaResource($caja);
+        return new CajaMinResource($caja);
     }
 
     private function have_caja_open() {
@@ -90,5 +103,23 @@ class CajaController extends Controller
             return true;
         }
         return false;
+    }
+
+    public function cerrar (Request $request, $caja_id) {
+
+        $caja = Caja::findOrFail($caja_id);
+
+        $data = $request->get('data');
+
+        $caja->dinero_final = $data['dinero_final'];
+
+        $caja->close_at = Carbon::now();
+
+        $caja->is_open = false;
+
+        $caja->save();
+
+        return new CajaResource(Caja::find($caja_id));
+
     }
 }

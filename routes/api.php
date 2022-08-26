@@ -41,6 +41,10 @@ use App\Http\Controllers\api\v1\StockmovementController;
 
 use App\Http\Controllers\api\v1\TagController;
 
+use App\Http\Controllers\api\v1\ValorController;
+
+use App\Http\Controllers\api\v1\FamiliaController;
+
 
 
 /*
@@ -77,12 +81,22 @@ Route::middleware(['cors'])->prefix('v1')->group(static function () {
     Route::put('saleproducts/{id}/update_values', [SaleproductController::class, 'update_values']);
     Route::post('saleproducts/{id}/updload_image', [SaleproductController::class, 'updload_image']);
     Route::put('saleproducts/{id}/remove_image', [SaleproductController::class, 'remove_image']);
+    Route::get('get_saleproducts_select', [SaleproductController::class, 'get_saleproducts_select']);
+
     Route::resource('purchaseproducts', PurchaseproductController::class)->only(['index', 'show', 'update', 'store']);
     
-    Route::resource('combos', ComboController::class)->only(['index', 'show']);
+    Route::resource('combos', ComboController::class)->only(['index', 'show', 'store', 'update']);
     Route::put('combos/{id}/update_values', [ComboController::class, 'update_values']);
+    Route::post('combos/{id}/updload_image', [ComboController::class, 'upload_image']);
+    Route::put('combos/{id}/remove_image', [ComboController::class, 'remove_image']);
+    Route::put('combos/{id}/update_configuration', [ComboController::class, 'update_configuration']);
+    Route::get('combos/get_saleproduct/{id}', [ComboController::class, 'get_saleproduct']);
 
-    
+
+    Route::resource('familias', FamiliaController::class)->only(['index', 'show', 'update', 'store']);
+    Route::put('familias/{id}/remove_image', [FamiliaController::class, 'remove_image']);
+    Route::post('familias/{id}/updload_image', [FamiliaController::class, 'updload_image']);
+    Route::get('get_familias_select', [FamiliaController::class, 'get_familias_select']);
 });
 
 Route::middleware(['auth:sanctum', 'cors'])->prefix('v1')->group(function () {
@@ -109,6 +123,7 @@ Route::middleware(['auth:sanctum', 'cors'])->prefix('v1')->group(function () {
     
 
     Route::resource('ivaaliquots', IvaaliquotController::class)->only(['index']);
+    Route::resource('valors', ValorController::class)->only(['index']);
     Route::resource('modelofacts', ModelofactController::class)->only(['index']);
 
     Route::post('comprobantes/facts', [ComprobanteController::class, 'make_fact']);
@@ -126,7 +141,10 @@ Route::middleware(['auth:sanctum', 'cors'])->prefix('v1')->group(function () {
     Route::resource('users', UserController::class)->only(['index', 'store', 'show', 'update']);
     Route::put('users/{id}/update_password', [UserController::class, 'update_password']);
 
+    Route::resource('cajas', CajaController::class)->only(['store','show']);
     Route::get('cajas/find/{id}', [CajaController::class, 'find']);
+    Route::put('cajas/{id}/cerrar', [CajaController::class, 'cerrar']);
+    
     Route::resource('payments', PaymentController::class)->only(['store']);
     Route::resource('refunds', RefundController::class)->only(['store']);
 

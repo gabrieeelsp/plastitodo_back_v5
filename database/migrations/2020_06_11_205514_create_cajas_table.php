@@ -17,11 +17,13 @@ class CreateCajasTable extends Migration
             $table->id();
             $table->decimal('dinero_inicial', 15, 4)->default(0);
             $table->decimal('dinero_final', 15, 4)->nullable();
-            $table->boolean('is_open')->default(false);
+            $table->boolean('is_open')->default(true);
+
+            $table->dateTimeTz('close_at')->nullable();
             $table->timestamps();
 
-            $table->foreignId('user_id')->constrained('users')->nullable()->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('sucursal_id')->constrained('sucursals')->nullable()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullable()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('sucursal_id')->nullable()->constrained('sucursals')->nullable()->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

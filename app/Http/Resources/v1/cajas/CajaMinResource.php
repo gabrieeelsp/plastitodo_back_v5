@@ -4,7 +4,7 @@ namespace App\Http\Resources\v1\cajas;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CajaResource extends JsonResource
+class CajaMinResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -41,9 +41,7 @@ class CajaResource extends JsonResource
                             'name' => $this->sucursal->name,
                         ]
                     ]
-                ],
-                'payments' => PaymentCajaResource::collection($this->payments),                
-                'refunds' => RefundCajaResource::collection($this->refunds),                
+                ],              
             ]
         ]; 
     }

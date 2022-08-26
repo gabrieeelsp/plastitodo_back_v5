@@ -25,7 +25,8 @@ class ComprobanteSaleResource extends JsonResource
                 'cae_fch_vto' => $this->cae_fch_vto ? date('d / m / Y', Carbon::parse($this->cae_fch_vto)->timestamp) : null,
                 'tipo' => $this->modelofact->name,
                 'id_afip_tipo' => $this->id_afip_tipo,
-                'created_at' => date('d / m / Y', $this->created_at->timestamp),
+                //'created_at' => date('d / m / Y', $this->created_at->timestamp),
+                'created_at' => $this->created_at,
 
                 'nombre_empresa' => $this->nombre_empresa,                
                 'razon_social_empresa' => $this->razon_social_empresa,

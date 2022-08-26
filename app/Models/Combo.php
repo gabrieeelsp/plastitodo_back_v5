@@ -9,6 +9,12 @@ class Combo extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'is_enable',
+        'is_enable_web'
+    ];
+
     public $timestamps = false;
 
     public function comboitems()

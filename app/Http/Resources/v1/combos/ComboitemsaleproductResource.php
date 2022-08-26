@@ -25,7 +25,7 @@ class ComboitemsaleproductResource extends JsonResource
 
                 'precio_may' => $this->precio_may,
 
-                'is_enable' => $this->pivot->is_enable,
+                'is_enable' => $this->pivot ? $this->pivot->is_enable : true,
             ],
             'relationships' => [
                 'stockproduct' => [
@@ -33,6 +33,7 @@ class ComboitemsaleproductResource extends JsonResource
                     'type' => 'stockproducts',
                     'attributes' => [
                         'costo' => $this->stockproduct->costo,
+                        'is_stock_unitario_variable' => $this->stockproduct->is_stock_unitario_variable,
                     ]
                     
                 ],

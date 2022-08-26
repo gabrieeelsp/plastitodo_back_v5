@@ -62,6 +62,8 @@ class StockproductSeeder extends Seeder
             'porc_min' => 40,
             'porc_may' => 30,
 
+            'is_enable' => true,
+
             'precision_min' => 0,
             'precision_may' => 1,
 
@@ -73,6 +75,8 @@ class StockproductSeeder extends Seeder
             'relacion_venta_stock' => 40,
             'porc_min' => 20,
             'porc_may' => 15,
+
+            'is_enable' => true,
 
             'precision_min' => -1,
             'precision_may' => 1,
@@ -125,6 +129,8 @@ class StockproductSeeder extends Seeder
             'porc_min' => 40,
             'porc_may' => 30,
 
+            'is_enable' => true,
+
             'precision_min' => 0,
             'precision_may' => 1,
 
@@ -137,6 +143,8 @@ class StockproductSeeder extends Seeder
             'relacion_venta_stock' => 40,
             'porc_min' => 20,
             'porc_may' => 15,
+
+            'is_enable' => true,
 
             'precision_min' => -1,
             'precision_may' => 1,
@@ -189,6 +197,8 @@ class StockproductSeeder extends Seeder
             'porc_min' => 40,
             'porc_may' => 15,
 
+            'is_enable' => true,
+
             'precision_min' => -1,
             'precision_may' => 1,
             
@@ -230,6 +240,8 @@ class StockproductSeeder extends Seeder
             'relacion_venta_stock' => 1,
             'porc_min' => 40,
             'porc_may' => 15,
+
+            'is_enable' => true,
 
             'precision_min' => -1,
             'precision_may' => 1,
@@ -273,6 +285,8 @@ class StockproductSeeder extends Seeder
             'relacion_venta_stock' => 1,
             'porc_min' => 40,
             'porc_may' => 15,
+
+            'is_enable' => true,
 
             'precision_min' => -1,
             'precision_may' => 2,
@@ -323,6 +337,8 @@ class StockproductSeeder extends Seeder
             'porc_min' => 40,
             'porc_may' => 30,
 
+            'is_enable' => true,
+
             'precision_min' => 1,
             'precision_may' => 1,
         ]);
@@ -332,6 +348,8 @@ class StockproductSeeder extends Seeder
             'relacion_venta_stock' => 100,
             'porc_min' => 25,
             'porc_may' => 15,
+
+            'is_enable' => true,
 
             'precision_min' => -1,
             'precision_may' => 1,
@@ -376,6 +394,8 @@ class StockproductSeeder extends Seeder
             'porc_min' => 40,
             'porc_may' => 15,
 
+            'is_enable' => true,
+
             'precision_min' => -1,
             'precision_may' => 0,
         ]);
@@ -385,6 +405,8 @@ class StockproductSeeder extends Seeder
             'relacion_venta_stock' => 0.1,
             'porc_min' => 40,
             'porc_may' => 30,
+
+            'is_enable' => true,
 
             'precision_min' => -1,
             'precision_may' => -1,
@@ -428,6 +450,8 @@ class StockproductSeeder extends Seeder
             'porc_min' => 40,
             'porc_may' => 15,
 
+            'is_enable' => true,
+
             'precision_min' => -1,
             'precision_may' => 1,
         ]);
@@ -437,6 +461,8 @@ class StockproductSeeder extends Seeder
             'relacion_venta_stock' => 0.28571,
             'porc_min' => 40,
             'porc_may' => 30,
+
+            'is_enable' => true,
 
             'precision_min' => -1,
             'precision_may' => 0,
@@ -480,6 +506,8 @@ class StockproductSeeder extends Seeder
             'relacion_venta_stock' => 1,
             'porc_min' => 40,
             'porc_may' => 15,
+
+            'is_enable' => true,
 
             'precision_min' => -1,
             'precision_may' => 1,
@@ -538,6 +566,8 @@ class StockproductSeeder extends Seeder
             'porc_min' => 40,
             'porc_may' => 15,
 
+            'is_enable' => true,
+
             'precision_min' => 0,
             'precision_may' => 1,
         ]);
@@ -578,6 +608,8 @@ class StockproductSeeder extends Seeder
             'relacion_venta_stock' => 1,
             'porc_min' => 40,
             'porc_may' => 15,
+
+            'is_enable' => true,
 
             'precision_min' => -1,
             'precision_may' => 1,

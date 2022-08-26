@@ -9,6 +9,10 @@ class Caja extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'dinero_inicial'
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -17,5 +21,15 @@ class Caja extends Model
     public function sucursal()
     {
         return $this->belongsTo(Sucursal::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function refunds()
+    {
+        return $this->hasMany(Refund::class);
     }
 }

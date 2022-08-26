@@ -23,6 +23,12 @@ class ComboResource extends JsonResource
                 'desc_may' => $this->desc_may,
                 'precio_min' => $this->precio_min,
                 'precio_may' => $this->precio_may,
+                'image'     => $this->image ? asset($this->image) : null,
+                'is_enable' => $this->is_enable,
+                'is_editable' => $this->is_editable,
+
+                'precision_min' => $this->precision_min,
+                'precision_may' => $this->precision_may,
             ],
             'relationships' => [
                 'comboitems' => ComboitemResource::collection($this->comboitems),

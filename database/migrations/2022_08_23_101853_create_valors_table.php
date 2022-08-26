@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateComboitemsTable extends Migration
+class CreateValorsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreateComboitemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('comboitems', function (Blueprint $table) {
+        Schema::create('valors', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->decimal('cantidad', 10, 4);
-
-            $table->foreignId('combo_id')->nullable()->constrained('combos')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('name', 128);
+            $table->decimal('valor', 10, 2)->default(0);
         });
     }
 
@@ -29,6 +27,6 @@ class CreateComboitemsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('comboitems');
+        Schema::dropIfExists('valors');
     }
 }
