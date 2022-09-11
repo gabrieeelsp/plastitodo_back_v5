@@ -28,11 +28,11 @@ class SucursalSeeder extends Seeder
             'punto_venta_fe' => 6,
         ]);
 
-        DB::table('sucursals')->insert([
+/*         DB::table('sucursals')->insert([
             'name' => "Rosario Sur",
             "empresa_id" => 1,
             'direccion' => "San Martin 3427",
             'punto_venta_fe' => 7,
-        ]);
+        ]); */
     }
 }

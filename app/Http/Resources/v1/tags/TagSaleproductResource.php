@@ -59,7 +59,7 @@ class TagSaleproductResource extends JsonResource
                             'id' => $this->stockproduct->familia->id,
                             'attributes' => [
                                 'name' => $this->stockproduct->familia->name, 
-                                'image'     => $this->stockproduct->familia->image ? asset($this->image1) : null,
+                                'image'     => $this->stockproduct->familia->image ? asset($this->stockproduct->familia->image) : null,
                             ]  
                         ] : null,
                     ]

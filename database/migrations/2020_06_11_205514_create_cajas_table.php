@@ -19,7 +19,7 @@ class CreateCajasTable extends Migration
             $table->decimal('dinero_final', 15, 4)->nullable();
             $table->boolean('is_open')->default(true);
 
-            $table->dateTimeTz('close_at')->nullable();
+            $table->timestampTz('close_at')->nullable();
             $table->timestamps();
 
             $table->foreignId('user_id')->nullable()->constrained('users')->nullable()->onUpdate('cascade')->onDelete('cascade');

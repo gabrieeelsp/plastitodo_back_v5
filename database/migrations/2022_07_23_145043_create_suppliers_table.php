@@ -21,6 +21,8 @@ class CreateSuppliersTable extends Migration
             $table->string('telefono')->nullable();
             $table->string('telefono_movil')->nullable();
             $table->string('email')->nullable();
+
+            $table->string('comments', 200)->nullable();
         });
     }
 

@@ -19,8 +19,10 @@ class CreateOrderitemsTable extends Migration
             $table->decimal('cantidad_total', 10, 4)->default(0);
             $table->decimal('precio', 10, 4)->default(0);
 
+            $table->boolean('is_prepared')->default(false);
+
             $table->foreignId('order_id')->constrained('orders')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('stockproduct_id')->constrained('stockproducts')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('saleproduct_id')->constrained('saleproducts')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

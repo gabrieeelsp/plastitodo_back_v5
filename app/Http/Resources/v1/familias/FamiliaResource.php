@@ -20,6 +20,8 @@ class FamiliaResource extends JsonResource
             'attributes' => [
                 'name' => $this->name,
                 'image'     => $this->image ? asset($this->image) : null,
+
+                'comments' => $this->comments ? $this->comments :  '',
             ],
         ];
     }

@@ -15,4 +15,5 @@ class Empresa extends Model
     {
         return $this->belongsTo(Ivacondition::class);
     }
+
 }

@@ -14,6 +14,11 @@ class Order extends Model
         return $this->hasMany(Orderitem::class);
     }
 
+    public function ordercomboitems()
+    {
+        return $this->hasMany(Ordercomboitem::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -27,5 +32,20 @@ class Order extends Model
     public function sucursal()
     {
         return $this->belongsTo(Sucursal::class);
+    }
+
+    public function deliveryshift()
+    {
+        return $this->belongsTo(Deliveryshift::class);
+    }
+
+    public function ivacondition()
+    {
+        return $this->belongsTo(Ivacondition::class);
+    }
+
+    public function sale()
+    {
+        return $this->belongsTo(Sale::class);
     }
 }

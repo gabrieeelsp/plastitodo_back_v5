@@ -43,6 +43,8 @@ class SaleproductResource extends JsonResource
                 'image2'     => $this->image2 ? asset($this->image2) : null,
                 'image3'     => $this->image3 ? asset($this->image3) : null,
 
+                'comments' => $this->comments ? $this->comments :  '',
+
                 
             ],
             'relationships' => [
@@ -54,6 +56,9 @@ class SaleproductResource extends JsonResource
                         'costo' => $this->stockproduct->costo,
                         'is_stock_unitario_variable' => $this->stockproduct->is_stock_unitario_variable,
                         'stock_aproximado_unidad' => $this->stockproduct->stock_aproximado_unidad,
+                    ],
+                    'relationships' => [
+                        'stocksucursals' => StockproductStockSucursalResource::collection($this->stockproduct->stocksucursals),
                     ]
                     
                     ],

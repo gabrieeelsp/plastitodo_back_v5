@@ -9,7 +9,7 @@ class Ordercomboitem extends Model
 {
     use HasFactory;
 
-    public $timestapms = false;
+    public $timestamps = false;
 
     public function order()
     {

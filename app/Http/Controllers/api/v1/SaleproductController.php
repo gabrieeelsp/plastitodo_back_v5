@@ -367,20 +367,6 @@ class SaleproductController extends Controller
                                 'saleproducts.image1',
                                 'saleproducts.image2',
                                 'saleproducts.image3',
-
-                                // 'saleproducts.name',
-                                // 'saleproducts.id',
-                                // 'saleproducts.porc_min as valor_1',
-                                // 'saleproducts.porc_may as valor_2',
-                                // 'saleproducts.relacion_venta_stock as valor_3',                                                     
-                                // 'stockproducts.costo as valor_4',
-                                // 'saleproducts.stockproduct_id as valor_5', 
-                                // 'stockproducts.is_stock_unitario_variable as valor_6',
-                                // 'stockproducts.stock_aproximado_unidad as valor_7',
-                                // 'saleproducts.desc_min as valor_8',
-                                // 'saleproducts.desc_may as valor_9',
-                                // 'saleproducts.fecha_desc_desde as valor_10',
-                                // 'saleproducts.fecha_desc_hasta as valor_11',
                             )
                             ->addSelect(DB::raw("'saleproduct' as tipo"));
 

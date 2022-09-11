@@ -37,6 +37,8 @@ class ClientResource extends JsonResource
                 'saldo' => $this->saldo,
                 'credito_disponible' => $this->credito_disponible,
 
+                'coments_client' => $this->coments_client ? $this->coments_client :  '',
+
             ],
             'relationships' => [
                 'ivacondition' => $this->ivacondition ? [

@@ -18,6 +18,8 @@ class CreateFamiliasTable extends Migration
             $table->string('name');
 
             $table->string('image')->nullable();
+
+            $table->string('comments', 200)->nullable();
         });
     }
 

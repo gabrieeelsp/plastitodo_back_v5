@@ -32,6 +32,8 @@ class User extends Authenticatable
         'tipo',
         'is_fact_default',
         'tipo_persona',
+        'coments_client',
+        'credito_disponible',
     ];
 
     /**

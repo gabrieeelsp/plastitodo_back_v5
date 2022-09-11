@@ -19,6 +19,8 @@ use App\Http\Controllers\api\v1\SupplierController;
 use App\Http\Controllers\api\v1\EmpresaController;
 use App\Http\Controllers\api\v1\SucursalController;
 
+use App\Http\Controllers\api\v1\DeliveryshiftController;
+
 use App\Http\Controllers\api\v1\IvaaliquotController;
 use App\Http\Controllers\api\v1\ModelofactController;
 
@@ -44,6 +46,8 @@ use App\Http\Controllers\api\v1\TagController;
 use App\Http\Controllers\api\v1\ValorController;
 
 use App\Http\Controllers\api\v1\FamiliaController;
+
+use App\Http\Controllers\api\v1\OrderController;
 
 
 
@@ -111,18 +115,26 @@ Route::middleware(['auth:sanctum', 'cors'])->prefix('v1')->group(function () {
     Route::resource('empresas', EmpresaController::class)->only(['index', 'show']);
     Route::resource('sucursals', SucursalController::class)->only(['index', 'show', 'update', 'store']);
 
+    Route::resource('orders', OrderController::class)->only(['index', 'update', 'show', 'store']);
+    Route::put('orders/{id}/set_state', [OrderController::class, 'set_state']);
+    Route::get('orders/{id}/get_order_check_sale', [OrderController::class, 'get_order_check_sale']);
+    Route::put('orders/{id}/update_precios', [OrderController::class, 'update_precios']);
+
+
     Route::resource('sales', SaleController::class)->only(['index', 'show', 'store']);
     Route::get('/sales/{id}/make_devolution', [SaleController::class, 'make_devolution']);
     Route::get('get_sale_products_venta', [SaleproductController::class, 'get_sale_products_venta']);
     Route::resource('ivaconditions', IvaconditionController::class)->only(['index']);
     Route::resource('doctypes', DoctypeController::class)->only(['index']);
     Route::resource('clients', ClientController::class)->only(['index', 'update', 'show', 'store']);
+    Route::get('get_clients_select', [ClientController::class, 'get_clients_select']);
     Route::post('suppliers/make_order', [SupplierController::class, 'make_order']);
     Route::resource('suppliers', SupplierController::class)->only(['index', 'update', 'show', 'store']);
     Route::get('get_suppliers_select', [SupplierController::class, 'get_suppliers_select']);
     
 
     Route::resource('ivaaliquots', IvaaliquotController::class)->only(['index']);
+    Route::resource('deliveryshifts', DeliveryshiftController::class)->only(['index']);
     Route::resource('valors', ValorController::class)->only(['index']);
     Route::resource('modelofacts', ModelofactController::class)->only(['index']);
 

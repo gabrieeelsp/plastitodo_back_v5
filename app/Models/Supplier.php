@@ -14,7 +14,8 @@ class Supplier extends Model
         'direccion',
         'telefono',
         'telefono_movil',
-        'email'
+        'email',
+        'comments',
     ];
 
     public $timestamps = false;

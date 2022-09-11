@@ -20,6 +20,7 @@ class TagResource extends JsonResource
             'attributes' => [
                 'name' => $this->name,                
 		        'color' => $this->color,
+                'comments' => $this->comments ? $this->comments :  '',
             ],
             'relationships' => [
                 'saleproducts' => TagSaleproductResource::collection($this->saleproducts),

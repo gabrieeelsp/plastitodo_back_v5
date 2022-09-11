@@ -10,7 +10,8 @@ class Familia extends Model
     use HasFactory;
 
     public $fillable = [
-        'name'
+        'name',
+        'comments',
     ];
 
     public $timestamps = false;

@@ -29,6 +29,7 @@ class CreateTagRequest extends FormRequest
             'data.attributes' => 'required|array',
             'data.attributes.name' => 'required|string|max:100',
             'data.attributes.color' => 'required|string|max:100',
+            'data.attributes.coments' => 'sometimes|max:200', 
 
 
         ];
@@ -40,6 +41,8 @@ class CreateTagRequest extends FormRequest
             'data.attributes.name.required' => 'The name field is required.',
             'data.attributes.name.max' => 'The name field should be less than 100.', 
             'data.attributes.color.required' => 'The color field is required.',
+
+            'data.attributes.name.coments' => 'The Comment must not be greater than 200 characters.',
 
         ];
     }

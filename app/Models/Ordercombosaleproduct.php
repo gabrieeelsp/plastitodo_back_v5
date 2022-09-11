@@ -9,7 +9,7 @@ class Ordercombosaleproduct extends Model
 {
     use HasFactory;
 
-    public $timestapms = false;
+    public $timestamps = false;
 
     public function ordercomboitem()
     {
@@ -18,6 +18,6 @@ class Ordercombosaleproduct extends Model
 
     public function saleproduct()
     {
-        return $this->hasMany(Saleproducts::class);
+        return $this->belongsTo(Saleproduct::class);
     }
 }

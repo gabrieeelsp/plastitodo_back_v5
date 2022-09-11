@@ -14,6 +14,7 @@ class Tag extends Model
     public $fillable = [
         'name',
         'color',
+        'comments',
     ];
 
     public function users()

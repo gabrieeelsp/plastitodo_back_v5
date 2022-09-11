@@ -23,6 +23,8 @@ class SupplierResource extends JsonResource
                 'telefono' => $this->telefono,
                 'telefono_movil' => $this->telefono_movil,
                 'email' => $this->email,
+
+                'comments' => $this->comments ? $this->comments :  '',
             ],
             'relationships' => [
                 'purchaseproducts' => PurchaseproductResource::collection($this->purchaseproducts),

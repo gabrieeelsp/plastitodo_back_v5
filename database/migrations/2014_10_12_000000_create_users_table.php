@@ -46,6 +46,8 @@ class CreateUsersTable extends Migration
 
             $table->foreignId('ivacondition_id')->default(3)->constrained('ivaconditions')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('doctype_id')->default(4)->constrained('doctypes')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->string('coments_client', 200)->nullable();
         });
     }
 

@@ -109,6 +109,7 @@ class ClientController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
+
     public function update(Request $request, $user_id)
     {
         //return $request->all();
@@ -154,5 +155,34 @@ class ClientController extends Controller
     public function destroy(User $user)
     {
         //
+    }   
+
+    public function get_clients_select(Request $request)
+    {
+
+        $searchText = trim($request->get('q'));
+        $val = explode(' ', $searchText );
+        $atr = [];
+        foreach ($val as $q) {
+            array_push($atr, [DB::raw('CONCAT(name, " ",surname)'), 'LIKE', '%'.strtolower($q).'%'] );
+        };
+
+        $limit = 10;
+        if($request->has('limit')){
+            $limit = $request->get('limit');
+        }
+
+        $clients = DB::table('users')
+                            ->where($atr)
+                            ->select(
+                                'users.name',
+                                'users.surname',
+                                'users.id',
+                                'users.tipo_persona'
+                            )
+                            ->orderBy('name', 'ASC')
+                            ->paginate($limit);
+        return $clients;
     }
+
 }

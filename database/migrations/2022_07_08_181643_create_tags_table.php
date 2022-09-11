@@ -18,6 +18,8 @@ class CreateTagsTable extends Migration
             
             $table->string('name');
             $table->string('color');
+
+            $table->string('comments', 200)->nullable();
         });
     }
 

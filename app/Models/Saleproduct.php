@@ -16,7 +16,8 @@ class Saleproduct extends Model
         'porc_min',
         'porc_may',
         'barcode',
-        'is_enable_web'
+        'is_enable_web',
+        'comments',
     ];
 
     public $timestamps = false;

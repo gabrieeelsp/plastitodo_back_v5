@@ -15,13 +15,20 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->Enum('state', ['INICIADO', 'AUTORIZADO', 'PREPARADO', 'FACTURADO', 'ENTREGADO'])->default('INICIADO');
+            $table->Enum('state', ['EDITANDO', 'FINALIZADO', 'CONFIRMADO', 'EN PREPARACION', 'PREPARADO', 'FACTURADO', 'EN CAMINO', 'ENTREGADO'])->default('EDITANDO');
+            $table->boolean('is_delivery')->default(true);
+            
             $table->timestamps();
 
-            $table->foreignId('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('client_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('sucursal_id')->constrained('sucursals')->nullable()->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('sale_id')->constrained('sales')->nullable()->onUpdate('cascade')->onDelete('cascade');
+            $table->dateTimeTz('fecha_entrega_acordada')->nullable();
+
+            $table->foreignId('user_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->foreignId('client_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('sucursal_id')->nullable()->constrained('sucursals')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('sale_id')->nullable()->constrained('sales')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('ivacondition_id')->nullable()->constrained('ivaconditions')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('deliveryshift_id')->nullable()->constrained('deliveryshifts')->onUpdate('cascade')->onDelete('cascade');
 
             //INICIADO -> el pedido fue recibido
             //AUTORIZADO -> fue revisado y se paso a armado, si el pedido es cargado por un vendedor entonces esta autorizado
