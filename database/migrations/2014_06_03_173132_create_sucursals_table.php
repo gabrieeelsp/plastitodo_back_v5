@@ -20,6 +20,8 @@ class CreateSucursalsTable extends Migration
             $table->string('direccion')->nullable();
             $table->string('telefono')->nullable();
             $table->string('telefono_movil')->nullable();
+
+            $table->string('horario')->nullable();
             
             $table->integer('punto_venta_fe')->nullable();
 

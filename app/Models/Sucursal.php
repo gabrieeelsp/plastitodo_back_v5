@@ -14,7 +14,8 @@ class Sucursal extends Model
         'direccion', 
         'punto_venta_fe',
         'telefono',
-        'telefono_movil'
+        'telefono_movil',
+        'horario',
     ];
 
     public $timestamps = false;

@@ -52,12 +52,16 @@ class SaleproductController extends Controller
      */
     public function store(CreateSaleproductRequest $request)
     {
+
         $data = $request->get('data');
         $stockproduct_id = $data['relationships']["stockproduct"]["data"]["id"];
 
         $saleproduct = Saleproduct::create($request->input('data.attributes'));
 
         $saleproduct->stockproduct()->associate($stockproduct_id);
+        $saleproduct->save();
+
+        $saleproduct->set_precios($saleproduct->stockproduct->costo);
         $saleproduct->save();
 
         return new SaleproductResource($saleproduct);

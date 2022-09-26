@@ -21,6 +21,7 @@ class SucursalSeeder extends Seeder
             'direccion' => "Baigorria 1306",
             'punto_venta_fe' => 5,
         ]);
+        /*
         DB::table('sucursals')->insert([
             'name' => "Rosario Centro",
             "empresa_id" => 1,
@@ -28,7 +29,7 @@ class SucursalSeeder extends Seeder
             'punto_venta_fe' => 6,
         ]);
 
-/*         DB::table('sucursals')->insert([
+        DB::table('sucursals')->insert([
             'name' => "Rosario Sur",
             "empresa_id" => 1,
             'direccion' => "San Martin 3427",

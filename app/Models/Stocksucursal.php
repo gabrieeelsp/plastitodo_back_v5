@@ -11,6 +11,15 @@ class Stocksucursal extends Model
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'stock',
+        'stock_pedido',
+        'stock_minimo',
+        'stock_maximo',
+        'stockproduct_id',
+        'sucursal_id',
+    ];
+
     public function stockproduct()
     {
         return $this->belongsTo(Stockproduct::class);

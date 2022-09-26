@@ -23,17 +23,19 @@ class UserSeeder extends Seeder
             'credito_disponible' => 1000,
             'direccion' => 'Alicia morea de justo 666',
 
-            'nombre_fact' => 'La chota SA',
+            //'nombre_fact' => 'La chota SA',
 
-            'ivacondition_id' => 1,
-            'doctype_id' => 1,
-            'docnumber' => '20458967939',
-            'direccion_fact' => 'Alicia morea de justo 6348',
+            //'ivacondition_id' => 1,
+            //'doctype_id' => 1,
+            //'docnumber' => '20458967939',
+            //'direccion_fact' => 'Alicia morea de justo 6348',
 
             'role' => 'ADMINISTRADOR',
 
 
         ]);
+
+        /*
         DB::table('users')->insert([
             'name' => 'carolina',
             'surname' => 'Saavedra',
@@ -63,6 +65,8 @@ class UserSeeder extends Seeder
 
             'tipo_persona' => 'JURIDICA',
         ]);
+
+        */
     
     }
 }

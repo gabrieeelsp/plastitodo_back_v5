@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Stockproduct;
 use App\Models\Ivaaliquot;
 use App\Models\Combo;
+use App\Models\Sucursal;
+use App\Models\Stocksucursal;
 use Illuminate\Http\Request;
 
 use App\Http\Resources\v1\stockproducts\StockproductResource;
@@ -164,10 +166,37 @@ class StockproductController extends Controller
         $data = $request->get('data');
         $ivaaliquot_id = $data['relationships']["ivaaliquot"]["data"]["id"];
 
-        $stockproduct = Stockproduct::create($request->input('data.attributes'));
+        try {
 
-        $stockproduct->ivaaliquot()->associate($ivaaliquot_id);
-        $stockproduct->save();
+            $stockproduct = Stockproduct::create($request->input('data.attributes'));
+
+            $stockproduct->ivaaliquot()->associate($ivaaliquot_id);
+            $stockproduct->save();
+
+            $sucursals = Sucursal::all();
+            foreach ( $sucursals as $sucursal ) {
+                $stocksucursal = Stocksucursal::create([
+                    'stock' => 0,
+                    'stock_pedido' => 0,
+                    'stock_minimo' => 0,
+                    'stock_maximo' => 0,
+                    'stockproduct_id' => $stockproduct->id,
+                    'sucursal_id' => $sucursal->id,
+
+                ]);
+                $stocksucursal->save();
+            }
+
+            DB::commit();
+
+        }catch(\Exception $e){
+            DB::rollback();
+            return $e;
+        }
+
+        
+
+
 
         return new StockproductResource($stockproduct);
     }
