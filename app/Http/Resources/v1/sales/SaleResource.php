@@ -20,7 +20,8 @@ class SaleResource extends JsonResource
             'attributes' => [
                 //'created_at' => date('d M Y - H:i', $this->created_at->timestamp),
                 'created_at' => $this->created_at,
-                'total' => $this->total
+                'total' => $this->total,
+                'saldo_sale' => $this->saldo_sale,
             ],
             'relationships' => [
                 'client' => $this->client ? [

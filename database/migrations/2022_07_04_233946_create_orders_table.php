@@ -15,12 +15,14 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->Enum('state', ['EDITANDO', 'FINALIZADO', 'CONFIRMADO', 'EN PREPARACION', 'PREPARADO', 'FACTURADO', 'EN CAMINO', 'ENTREGADO'])->default('EDITANDO');
+            $table->Enum('state', ['EDITANDO', 'FINALIZADO', 'CONFIRMADO', 'EN PREPARACION', 'PREPARADO', 'FACTURADO', 'EN DISTRIBUCION', 'ENTREGADO'])->default('EDITANDO');
             $table->boolean('is_delivery')->default(true);
             
             $table->timestamps();
 
             $table->dateTimeTz('fecha_entrega_acordada')->nullable();
+
+            $table->integer('cant_bultos')->nullable();
 
             $table->foreignId('user_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
 

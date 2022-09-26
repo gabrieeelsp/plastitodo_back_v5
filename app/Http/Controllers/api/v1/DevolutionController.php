@@ -153,6 +153,9 @@ class DevolutionController extends Controller
                 
             }
 
+            $sale->saldo_sale = $sale->saldo_sale - $request->get('total');
+            $sale->save();
+
             $devolution->save();
 
             usleep(1000000);

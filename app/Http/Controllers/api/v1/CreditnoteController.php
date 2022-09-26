@@ -71,6 +71,10 @@ class CreditnoteController extends Controller
                 $creditnoteItem->save();
 
             }
+
+            $sale->saldo_sale = $sale->saldo_sale - $data['attributes']['total'];
+            $sale->save();
+
             $creditnote->save();
 
             usleep(1000000);

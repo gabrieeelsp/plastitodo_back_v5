@@ -15,6 +15,7 @@ use App\Models\Stocksucursal;
 use App\Models\User;
 use App\Models\Modelofact;
 use App\Models\Ivacondition;
+use App\Models\Paymentmethod;
 use Illuminate\Http\Request;
 
 use Carbon\Carbon;
@@ -53,6 +54,10 @@ class SaleController extends Controller
             array_push($atr, ['user_id', '=', $request->get('user_id')] );
         }
 
+        if ( $request->has('sucursal_id') ) {
+            array_push($atr, ['sucursal_id', '=', $request->get('sucursal_id')] );
+        }
+
         $date_from = null;
         $date_to = null;
         if ( $request->has('date_from') ) {
@@ -63,6 +68,7 @@ class SaleController extends Controller
                 $date_to = $request->get('date_from');
             }
         }
+        //return $date_from;
 
         // date_from----
         if ( $date_from ){
@@ -100,7 +106,7 @@ class SaleController extends Controller
         }
 
         //---- verificar cuenta corriente del cliente sino devolver respuesta --------
-        $total_payments = 0;
+        /* $total_payments = 0;
         if($request->has('payments')){
             $payments = $request->get('payments');
             foreach($payments as $payment){
@@ -113,11 +119,11 @@ class SaleController extends Controller
         }
 
         if ( $client ) {
-            if ( round($client->saldo + $saldo_sale, 2, PHP_ROUND_HALF_UP) > $client->credito_disponible) {
+            if ( $saldo_sale > 0 && round($client->saldo + $saldo_sale, 2, PHP_ROUND_HALF_UP) > $client->credito_disponible) {
                 return response()->json(['message' => 'EL cliente no posee crédito disponible que permita registrar la venta saldo_cliente: ' . $client->saldo. ' saldo_venta: '.$saldo_sale.' saldo disp: '. $client->credito_disponible   ], 422);
             }
 
-        }
+        } */
         //---- verificar cuenta corriente del cliente sino devolver respuesta --------
 
         
@@ -175,12 +181,14 @@ class SaleController extends Controller
 
         try {
             DB::beginTransaction();
+            
             $sale = Sale::create();
 
             $sale->user()->associate(Auth::user());
             $sale->sucursal()->associate($request->get('sucursal_id'));
 
             $sale->total = $request->get('total');
+            $saldo_sale = $request->get('total');
 
             $saldo_cliente = 0;
             //$client = null;
@@ -291,6 +299,15 @@ class SaleController extends Controller
 
                     $salePayment->sale()->associate($sale);
                     $salePayment->paymentMethod()->associate($payment['paymentmethod_id']);
+
+                    $paymentmethod = Paymentmethod::findOrFail($payment['paymentmethod_id']);
+                    if ( $paymentmethod->requires_confirmation ) {
+                        $salePayment->is_confirmed = false;
+                    }else {
+                        $salePayment->is_confirmed = true;
+                    }
+
+
                     $salePayment->valor = $payment['valor'];
                     $salePayment->caja()->associate($caja);
 
@@ -304,6 +321,8 @@ class SaleController extends Controller
                     $salePayment->created_at = Carbon::parse($salePayment->created_at)->addSeconds();
 
                     $salePayment->save();
+
+                    $saldo_sale = $saldo_sale - $salePayment->valor;
                 }
             }
 
@@ -312,6 +331,7 @@ class SaleController extends Controller
                 $client->save();
             }
 
+            $sale->saldo_sale = $saldo_sale;
             $sale->save();
             usleep(500000);
 

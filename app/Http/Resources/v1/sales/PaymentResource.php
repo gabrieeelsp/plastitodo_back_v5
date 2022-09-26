@@ -20,6 +20,15 @@ class PaymentResource extends JsonResource
             'attributes' => [
                 'valor' => $this->valor,
                 'name' => $this->paymentmethod->name,
+                'is_confirmed' => $this->is_confirmed,
+            ],
+            'relationships' => [
+                'paymentmethod' => [
+                    'id' => $this->paymentmethod->id,
+                    'name' => $this->paymentmethod->name,
+                    'is_confirmed' => $this->is_confirmed,
+                    'requires_confirmation' => $this->paymentmethod->requires_confirmation,
+                ],
             ]
         ];
     }

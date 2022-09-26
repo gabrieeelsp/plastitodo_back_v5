@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
+use App\Models\Paymentmethod;
 use Illuminate\Http\Request;
 
 use App\Models\Caja;
@@ -12,6 +13,7 @@ use App\Models\Sale;
 use App\Http\Requests\v1\payments\CreatePaymentRequest;
 
 use App\Http\Resources\v1\sales\PaymentResource;
+use App\Http\Resources\v1\payments\PaymentListResource;
 
 use Illuminate\Support\Facades\DB;
 
@@ -22,9 +24,50 @@ class PaymentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $limit = 5;
+        if($request->has('limit')){
+            $limit = $request->get('limit');
+        }
+        //return $request->all();
+
+        $atr = [];
+
+
+        if ( $request->has('is_confirmed') ) {
+            
+            array_push($atr, ['is_confirmed', filter_var($request->get('is_confirmed'), FILTER_VALIDATE_BOOL)] );
+        }
+
+        $date_from = null;
+        $date_to = null;
+        if ( $request->has('date_from') ) {
+            $date_from = $request->get('date_from');
+            if ( $request->has('date_to' )) {
+                $date_to = $request->get('date_to');
+            }else {
+                $date_to = $request->get('date_from');
+            }
+        }
+
+        // date_from----
+        if ( $date_from ){
+
+            $payments = Payment::orderBy('id', 'DESC')
+                ->where($atr)
+                ->whereBetween('created_at', [$date_from, $date_to . ' 23:59:59'])
+                ->paginate($limit);
+            return PaymentListResource::collection($payments);
+        }
+
+        // sin date_ftom-------
+        $payments = Payment::orderBy('id', 'DESC')
+            ->where($atr)
+            ->where($atr)
+            ->paginate($limit);
+        return PaymentListResource::collection($payments);
+
     }
 
     /**
@@ -50,8 +93,17 @@ class PaymentController extends Controller
 
             $salePayment = new Payment;
 
-            $salePayment->sale()->associate($sale);
             $salePayment->paymentmethod()->associate($data['relationships']['paymentmethod']['data']['id']);
+            $paymentmethod = Paymentmethod::findOrFail($data['relationships']['paymentmethod']['data']['id']);
+            if ( $paymentmethod->requires_confirmation ) {
+                $salePayment->is_confirmed = false;
+            }else {
+                $salePayment->is_confirmed = true;
+            }
+
+
+            $salePayment->sale()->associate($sale);
+            
             $salePayment->caja()->associate($caja);
 
             $salePayment->valor = $data['attributes']['valor'];
@@ -63,6 +115,9 @@ class PaymentController extends Controller
                 $salePayment->saldo = $saldo_cliente;
                 $sale->client->save();
             }
+
+            $sale->saldo_sale = $sale->saldo_sale - $data['attributes']['valor'];
+            $sale->save();
 
             $salePayment->save();
 
@@ -111,5 +166,22 @@ class PaymentController extends Controller
     public function destroy(Payment $payment)
     {
         //
+    }
+    public function confirm ( $payment_id )
+    {
+        $payment = Payment::findOrFail($payment_id);
+        $payment->is_confirmed = true;
+        $payment->save();
+
+        return new PaymentResource($payment); 
+    }
+
+    public function no_confirm ( $payment_id )
+    {
+        $payment = Payment::findOrFail($payment_id);
+        $payment->is_confirmed = false;
+        $payment->save();
+
+        return new PaymentResource($payment); 
     }
 }

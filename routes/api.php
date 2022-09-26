@@ -49,6 +49,8 @@ use App\Http\Controllers\api\v1\FamiliaController;
 
 use App\Http\Controllers\api\v1\OrderController;
 
+use App\Http\Controllers\api\v1\StocktransferController;
+
 
 
 /*
@@ -101,6 +103,8 @@ Route::middleware(['cors'])->prefix('v1')->group(static function () {
     Route::put('familias/{id}/remove_image', [FamiliaController::class, 'remove_image']);
     Route::post('familias/{id}/updload_image', [FamiliaController::class, 'updload_image']);
     Route::get('get_familias_select', [FamiliaController::class, 'get_familias_select']);
+
+    Route::get('get_stockproducts_order_by_stock', [StockproductController::class, 'get_stockproducts_order_by_stock']);
 });
 
 Route::middleware(['auth:sanctum', 'cors'])->prefix('v1')->group(function () {
@@ -112,13 +116,18 @@ Route::middleware(['auth:sanctum', 'cors'])->prefix('v1')->group(function () {
     Route::resource('stockmovements', StockmovementController::class)->only(['index', 'show', 'update', 'destroy']);
     Route::post('stockmovements/new', [StockmovementController::class, 'new']);
 
+    Route::resource('stocktransfers', StocktransferController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
+
     Route::resource('empresas', EmpresaController::class)->only(['index', 'show']);
     Route::resource('sucursals', SucursalController::class)->only(['index', 'show', 'update', 'store']);
+    Route::get('get_sucursals_select', [SucursalController::class, 'get_sucursals_select']);
 
-    Route::resource('orders', OrderController::class)->only(['index', 'update', 'show', 'store']);
+    Route::get('orders/get_orders_distribucion', [OrderController::class, 'get_orders_distribucion']);
+    Route::resource('orders', OrderController::class)->only(['index', 'update', 'show', 'store', 'destroy']);
     Route::put('orders/{id}/set_state', [OrderController::class, 'set_state']);
     Route::get('orders/{id}/get_order_check_sale', [OrderController::class, 'get_order_check_sale']);
     Route::put('orders/{id}/update_precios', [OrderController::class, 'update_precios']);
+    
 
 
     Route::resource('sales', SaleController::class)->only(['index', 'show', 'store']);
@@ -157,8 +166,13 @@ Route::middleware(['auth:sanctum', 'cors'])->prefix('v1')->group(function () {
     Route::get('cajas/find/{id}', [CajaController::class, 'find']);
     Route::put('cajas/{id}/cerrar', [CajaController::class, 'cerrar']);
     
-    Route::resource('payments', PaymentController::class)->only(['store']);
-    Route::resource('refunds', RefundController::class)->only(['store']);
+    Route::resource('payments', PaymentController::class)->only(['index', 'store']);
+    Route::put('payments/{id}/confirm', [PaymentController::class, 'confirm']);
+    Route::put('payments/{id}/no_confirm', [PaymentController::class, 'no_confirm']);
+
+    Route::resource('refunds', RefundController::class)->only(['index', 'store']);
+    Route::put('refunds/{id}/confirm', [RefundController::class, 'confirm']);
+    Route::put('refunds/{id}/no_confirm', [RefundController::class, 'no_confirm']);
 
     Route::get('get_tags_select', [TagController::class, 'get_tags_select']);
     Route::resource('tags', TagController::class)->only(['index', 'update', 'show', 'store']);

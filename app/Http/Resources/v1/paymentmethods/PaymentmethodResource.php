@@ -19,7 +19,8 @@ class PaymentmethodResource extends JsonResource
             'type' => 'paymentmethods',
             'attributes' => [
                 'name' => $this->name,
-                'is_enable' => $this->is_enable
+                'is_enable' => $this->is_enable,
+                'requires_confirmation' => $this->requires_confirmation,
             ]
         ];
         

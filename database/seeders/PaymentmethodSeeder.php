@@ -28,7 +28,8 @@ class PaymentmethodSeeder extends Seeder
         ]);
 
         DB::table('paymentmethods')->insert([
-            'name' => "Transferencia"
+            'name' => "Transferencia",
+            'requires_confirmation' => true,
         ]);
 
         DB::table('paymentmethods')->insert([

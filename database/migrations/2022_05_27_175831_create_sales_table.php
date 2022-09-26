@@ -19,6 +19,7 @@ class CreateSalesTable extends Migration
 
             $table->decimal('total', 15, 4)->default(0);
             $table->decimal('saldo', 15, 4)->default(0);
+            $table->decimal('saldo_sale', 15, 4)->default(0);
 
             $table->foreignId('client_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('user_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');

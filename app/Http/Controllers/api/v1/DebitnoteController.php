@@ -70,6 +70,10 @@ class DebitnoteController extends Controller
                 $debitnoteItem->save();
 
             }
+
+            $sale->saldo_sale = $sale->saldo_sale + $data['attributes']['total'];
+            $sale->save();
+
             $debitnote->save();
 
             usleep(1000000);

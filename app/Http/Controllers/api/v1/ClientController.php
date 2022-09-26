@@ -129,11 +129,13 @@ class ClientController extends Controller
                 $user->doctype_id = $request->get('data')['relationships']['doctype']['id'];
             }
 
-
-            $user->tags()->detach();
-            foreach ( $request->get('data')['relationships']['tags'] as $tag ) {
-                $user->tags()->attach($tag['id']);
+            if ( $request->has('data.relationships.tags')) {
+                $user->tags()->detach();
+                foreach ( $request->get('data')['relationships']['tags'] as $tag ) {
+                    $user->tags()->attach($tag['id']);
+                }
             }
+            
 
             $user->save();
 

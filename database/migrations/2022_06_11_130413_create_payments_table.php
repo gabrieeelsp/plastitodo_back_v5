@@ -17,6 +17,7 @@ class CreatePaymentsTable extends Migration
             $table->id();
             $table->Decimal('valor', 10, 4)->default(0);
             $table->decimal('saldo', 15, 4)->default(0);
+            $table->boolean('is_confirmed')->default(false);
             $table->timestamps();
 
             $table->foreignId('paymentmethod_id')->constrained('paymentmethods')->onUpdate('cascade')->onDelete('cascade');

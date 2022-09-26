@@ -10,6 +10,8 @@ use App\Http\Resources\v1\sucursals\SucursalResource;
 
 use App\Http\Requests\v1\sucursals\CreateSucursalRequest;
 
+use Illuminate\Support\Facades\DB;
+
 class SucursalController extends Controller
 {
     /**
@@ -94,5 +96,31 @@ class SucursalController extends Controller
     public function destroy(Sucursal $sucursal)
     {
         //
+    }
+
+    public function get_sucursals_select(Request $request)
+    {
+
+        $searchText = trim($request->get('q'));
+        $val = explode(' ', $searchText );
+        $atr = [];
+        foreach ($val as $q) {
+            array_push($atr, ['name', 'LIKE', '%'.strtolower($q).'%'] );
+        };
+
+        $limit = 10;
+        if($request->has('limit')){
+            $limit = $request->get('limit');
+        }
+
+        $sucursals = DB::table('sucursals')
+                            ->where($atr)
+                            ->select(
+                                'sucursals.name',
+                                'sucursals.id',
+                            )
+                            ->orderBy('name', 'ASC')
+                            ->paginate($limit);
+        return $sucursals;
     }
 }

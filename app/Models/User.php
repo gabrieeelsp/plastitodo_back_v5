@@ -33,6 +33,7 @@ class User extends Authenticatable
         'is_fact_default',
         'tipo_persona',
         'coments_client',
+        'coments_direccion_client',
         'credito_disponible',
     ];
 

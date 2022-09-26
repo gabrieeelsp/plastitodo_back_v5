@@ -10,10 +10,13 @@ use Illuminate\Http\Request;
 
 use App\Http\Resources\v1\stockproducts\StockproductResource;
 use App\Http\Resources\v1\stockproducts\StockproductStockResource;
+use App\Http\Resources\v1\stockproducts\StockProductOrderByStockResource;
 
 use App\Http\Requests\v1\stockproducts\CreateStockproductRequest;
 
 use Illuminate\Support\Facades\DB;
+
+use Carbon\Carbon;
 
 class StockproductController extends Controller
 {
@@ -24,6 +27,13 @@ class StockproductController extends Controller
      */
     public function index(Request $request)
     {
+
+        $orderBy = 'name';  
+        $order = 'ASC'; 
+        if ( $request->has('order_time_set_costo') && filter_var($request->get('order_time_set_costo'), FILTER_VALIDATE_BOOL)) {
+            $orderBy = 'time_set_costo';
+            $order = 'DESC';
+        }
 
         $searchText = trim($request->get('q'));
         $val = explode(' ', $searchText);
@@ -41,15 +51,14 @@ class StockproductController extends Controller
             $limit = $request->get('limit');
         }
 
-        $items = Stockproduct::orderBy('name', 'ASC')
+        $items = Stockproduct::orderBy($orderBy, $order)
             ->where($atr)
             ->paginate($limit);
         
         return StockproductResource::collection($items);
     }
-    public function get_stock(Request $request)
+    /* public function get_stock(Request $request)
     {   
-
         $searchText = trim($request->get('q'));
         $val = explode(' ', $searchText);
         $atr = [];
@@ -61,6 +70,81 @@ class StockproductController extends Controller
         if($request->has('limit')){
             $limit = $request->get('limit');
         }
+
+        $items = Stockproduct::orderBy('name', 'ASC')
+            ->where($atr)
+            ->paginate($limit);
+        
+        return StockproductStockResource::collection($items);
+    } */
+    public function get_stock(Request $request)
+    {
+        $orderBy = 'name';   
+        if ( $request->has('order_stock') && filter_var($request->get('order_stock'), FILTER_VALIDATE_BOOL)) {
+            $orderBy = 'stock_relativo';
+        }
+    
+        $searchText = trim($request->get('q'));
+        $val = explode(' ', $searchText);
+        $atr = [];
+        foreach($val as $q) {
+            array_push($atr, ['stockproducts.name', 'LIKE', '%'.strtolower($q).'%']);
+        };
+
+        if ( $request->has('sucursal_id') ) {
+            array_push($atr, ['sucursal_id', '=', $request->get('sucursal_id')] );
+        }
+
+        $limit = 50;
+        if($request->has('limit')){
+            $limit = $request->get('limit');
+        }
+
+
+        
+
+
+        $stockproducts = DB::table('stockproducts')
+            ->select(
+                'stockproducts.id as id',
+                'stockproducts.name as name',   
+                'stockproducts.costo as costo',
+                'stockproducts.is_stock_unitario_variable as is_stock_unitario_variable',
+                'stockproducts.stock_aproximado_unidad as stock_aproximado_unidad',
+                'stockproducts.image as image',
+                'stockproducts.familia_id as familia_id',
+                )
+            //->addSelect(DB::raw("0 as stock_pedido"))
+            ->selectRaw('SUM(stocksucursals.stock) as stock')
+            ->selectRaw('SUM(stocksucursals.stock_minimo) as stock_minimo')
+            ->selectRaw('SUM(stocksucursals.stock_pedido) as stock_pedido')
+            //->selectRaw('(SUM(stocksucursals.stock) / SUM(stocksucursals.stock_minimo + 0.0000001)) as stock_relativo')
+            ->selectRaw('(SUM(stocksucursals.stock - stocksucursals.stock_pedido) / SUM(stocksucursals.stock_minimo + 0.0000001)) as stock_relativo')
+            ->where($atr)
+            ->join('stocksucursals', 'stockproducts.id', '=', 'stocksucursals.stockproduct_id')
+
+
+
+            
+            ->groupBy('stockproducts.id')
+            ->orderBy($orderBy)
+            
+            ->paginate($limit);
+
+                //----------------------
+        
+
+        /* $stockproducts_orderitems = DB::table('orders')
+            ->selectRaw('(SUM(orderitems.cantidad * saleproducts.relacion_venta_stock)) as cantidad')    
+            ->whereIn('orders.state', ['EDITANDO', 'FINALIZADO', 'CONFIRMADO', 'EN PREPARACION'])
+            ->join('orderitems', 'orderitems.order_id', '=', 'orders.id')
+            ->where('orderitems.is_prepared', false)
+            ->join('saleproducts', 'saleproducts.id', '=', 'orderitems.saleproduct_id')
+            ->join('stockproducts', 'stockproducts.id', '=', $this->id)
+            //->where('saleproducts.stockproduct_id', '=', $this->id)
+            ->groupBy('saleproducts.stockproduct_id')
+            ->get(); */
+        return StockProductOrderByStockResource::collection($stockproducts);
 
         $items = Stockproduct::orderBy('name', 'ASC')
             ->where($atr)
@@ -112,6 +196,10 @@ class StockproductController extends Controller
 
         try {
             DB::beginTransaction();
+
+            if ( $stockproduct->costo != $request->get('data')['attributes']['costo'] ) {
+                $stockproduct->time_set_costo = Carbon::now();
+            }
 
             $stockproduct->update($request->input('data.attributes'));
 
@@ -174,6 +262,7 @@ class StockproductController extends Controller
                         foreach ( $stockproducts_group as $itemGroup ) {
 
                             $itemGroup->costo = $data['attributes']['costo'];
+                            $itemGroup->time_set_costo = Carbon::now();
 
                             foreach ( $itemGroup->saleproducts as $itemSaleproduct ) {
                                 $itemSaleproduct->set_precios($data['attributes']['costo']);
@@ -203,6 +292,7 @@ class StockproductController extends Controller
 
             $data = $request->get('data');
             $stockproduct->costo = $data['attributes']['costo'];
+            $stockproduct->time_set_costo = Carbon::now();
             foreach ( $stockproduct->saleproducts as $itemSaleproduct ) {
                 $itemSaleproduct->set_precios($data['attributes']['costo']);
                 $itemSaleproduct->save();
@@ -311,4 +401,5 @@ class StockproductController extends Controller
         $image->move(public_path() . "/$post_path", $rename);
         return "$post_path/$rename";
     }
+
 }

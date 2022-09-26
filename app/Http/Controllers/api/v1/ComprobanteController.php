@@ -103,14 +103,20 @@ class ComprobanteController extends Controller
     {  
         //return $request->all();
         $sale = Sale::findOrFail($request->get('sale_id'));
-
-        if($sale->comprobante && $sale->comprobante->is_autorizado()) {
+        
+        if($sale->comprobante && $sale->comprobante->is_autorizado()) { 
             return response()->json(['message' => 'El comprobante ya se encuentra generado.']);
         }
 
-        $ivacondition = Ivacondition::findOrFail($request->get('ivacondition_id'));
+        if ( $request->get('ivacondition_id') == 0 && $sale->comprobante ) {
+            $ivacondition = Ivacondition::where('name', 'LIKE', $sale->comprobante->ivacondition_name_client)->first();
+        } else {
+            $ivacondition = Ivacondition::findOrFail($request->get('ivacondition_id'));
+        }
+        
 
-        $afip = new Afip(array('CUIT' => 20291188568));
+        //$afip = new Afip(array('CUIT' => 20291188568));
+        $afip = new Afip(array('CUIT' => 30714071633));
 
         $resp = $this->verificar_comprobantes($sale->sucursal->punto_venta_fe, $ivacondition->modelofact->id_afip_factura, $afip);
 
@@ -295,7 +301,8 @@ class ComprobanteController extends Controller
 
         $modelofact = $devolution->sale->comprobante->modelofact;
 
-        $afip = new Afip(array('CUIT' => 20291188568));
+        //$afip = new Afip(array('CUIT' => 20291188568));
+        $afip = new Afip(array('CUIT' => 30714071633));
 
         $resp = $this->verificar_comprobantes($devolution->sucursal->punto_venta_fe, $modelofact->id_afip_nc, $afip);
 
@@ -442,7 +449,8 @@ class ComprobanteController extends Controller
 
         $modelofact = $creditnote->sale->comprobante->modelofact;
 
-        $afip = new Afip(array('CUIT' => 20291188568));
+        //$afip = new Afip(array('CUIT' => 20291188568));
+        $afip = new Afip(array('CUIT' => 30714071633));
 
         $resp = $this->verificar_comprobantes($creditnote->sucursal->punto_venta_fe, $modelofact->id_afip_nc, $afip);
 
@@ -591,7 +599,8 @@ class ComprobanteController extends Controller
 
         $modelofact = $debitnote->sale->comprobante->modelofact;
 
-        $afip = new Afip(array('CUIT' => 20291188568));
+        //$afip = new Afip(array('CUIT' => 20291188568));
+        $afip = new Afip(array('CUIT' => 30714071633));
 
         $resp = $this->verificar_comprobantes($debitnote->sucursal->punto_venta_fe, $modelofact->id_afip_nd, $afip);
 

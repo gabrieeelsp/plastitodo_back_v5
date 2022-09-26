@@ -35,6 +35,7 @@ class PurchaseorderitemResource extends JsonResource
                                 'is_stock_unitario_variable' => $this->purchaseproduct->stockproduct->is_stock_unitario_variable,
                                 'stock_aproximado_unidad' => $this->purchaseproduct->stockproduct->stock_aproximado_unidad,
                                 'image' => $this->purchaseproduct->stockproduct->image ? asset($this->purchaseproduct->stockproduct->image) : null,
+                                //'stock_pedidos' => $this->purchaseproduct->stockproduct->get_stock_orders(),
                             ],
                             'relationships' => [
                                 'stocksucursals' => PurchaseproductSTSucursal::collection($this->purchaseproduct->stockproduct->stocksucursals),

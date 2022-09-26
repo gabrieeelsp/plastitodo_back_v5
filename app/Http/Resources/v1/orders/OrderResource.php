@@ -24,6 +24,7 @@ class OrderResource extends JsonResource
                 'is_delivery' => $this->is_delivery,
                 'state' => $this->state,
                 'fecha_entrega_acordada' => $this->fecha_entrega_acordada ? Carbon::createFromFormat('Y-m-d H:i:s', $this->fecha_entrega_acordada) : null,
+                'cant_bultos' => $this->cant_bultos,
             ],
             'relationships' => [
                 'client' => $this->client ? [
@@ -33,6 +34,9 @@ class OrderResource extends JsonResource
                         'surname' => $this->client->surname,
                         'tipo' => $this->client->tipo,
                         'tipo_persona' => $this->client->tipo_persona,
+                        'direccion' => $this->client->direccion,
+                        'telefono' => $this->client->telefono,
+                        'coments_direccion_client' => $this->client->coments_direccion_client,
                     ],
                     'relationships' => [
                         'ivacondition' => $this->client->ivacondition ? [
@@ -71,8 +75,20 @@ class OrderResource extends JsonResource
                 'sale' => $this->sale ? [
                     'id' => $this->sale->id,
                     'attributes' => [
-                        'created_at' => $this->sale->created_at
-                    ] 
+                        'created_at' => $this->sale->created_at,
+                        'total' => $this->sale->total
+                    ],
+                    'relationships' => [
+                        'payments' => PaymentResource::collection($this->sale->payments),
+                        'refunds' => RefundResource::collection($this->sale->refunds),
+                        'comprobante' => $this->sale->comprobante && $this->sale->comprobante->cae ? [
+                            'id' => $this->sale->comprobante->id,
+                            'attributes' => [
+                                'numero' => $this->sale->comprobante->numero,
+                                'punto_venta' => $this->sale->comprobante->punto_venta,
+                            ]
+                        ] : null,
+                    ],
                 ] : null,
                 'orderitems' => OrderitemResource::collection($this->orderitems), 
                 'ordercomboitems' => OrdercomboitemResource::collection($this->ordercomboitems),   

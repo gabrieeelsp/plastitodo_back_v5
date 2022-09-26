@@ -115,13 +115,13 @@ class StockproductSeeder extends Seeder
             'stock_minimo' => 80,
             'stock_maximo' => 200,
         ]);
-        /* DB::table('stocksucursals')->insert([
+        DB::table('stocksucursals')->insert([
             'stockproduct_id' => 2,
-            'sucursal_id' => 3,
+            'sucursal_id' => 1,
             'stock' => 200,
             'stock_minimo' => 80,
             'stock_maximo' => 200,
-        ]); */
+        ]); 
         DB::table('saleproducts')->insert([ // 3
             'stockproduct_id' => 2,
             'name' => 'Alfajor 38g Negro GUAYMALLEN UNIDAD',
@@ -182,13 +182,13 @@ class StockproductSeeder extends Seeder
             'stock_minimo' => 5,
             'stock_maximo' => 12,
         ]);
-/*         DB::table('stocksucursals')->insert([
+         DB::table('stocksucursals')->insert([
             'stockproduct_id' => 3,
-            'sucursal_id' => 3,
+            'sucursal_id' => 2,
             'stock' => 25,
             'stock_minimo' => 5,
             'stock_maximo' => 12,
-        ]); */
+        ]);
         
         DB::table('saleproducts')->insert([ // 5
             'stockproduct_id' => 3,
@@ -222,17 +222,17 @@ class StockproductSeeder extends Seeder
         DB::table('stocksucursals')->insert([
             'stockproduct_id' => 4,
             'sucursal_id' => 2,
-            'stock' => -5,
-            'stock_minimo' => 10,
+            'stock' => 5,
+            'stock_minimo' => 0,
             'stock_maximo' => 30,
         ]);
-/*         DB::table('stocksucursals')->insert([
+        DB::table('stocksucursals')->insert([
             'stockproduct_id' => 4,
-            'sucursal_id' => 3,
+            'sucursal_id' => 1,
             'stock' => 10,
             'stock_minimo' => 10,
-            'stock_maximo' => 30,
-        ]); */
+            'stock_maximo' => 40,
+        ]);
         
         DB::table('saleproducts')->insert([ // 6
             'stockproduct_id' => 4,
@@ -379,13 +379,13 @@ class StockproductSeeder extends Seeder
             'stock_minimo' => 5,
             'stock_maximo' => 20,
         ]);
-/*         DB::table('stocksucursals')->insert([
+        DB::table('stocksucursals')->insert([
             'stockproduct_id' => 7,
-            'sucursal_id' => 3,
+            'sucursal_id' => 1,
             'stock' => 2,
             'stock_minimo' => 15,
             'stock_maximo' => 30,
-        ]); */
+        ]); 
 
         DB::table('saleproducts')->insert([ // 3
             'stockproduct_id' => 7,
@@ -435,13 +435,13 @@ class StockproductSeeder extends Seeder
             'stock_minimo' => 5,
             'stock_maximo' => 10,
         ]);
-/*         DB::table('stocksucursals')->insert([
+        DB::table('stocksucursals')->insert([
             'stockproduct_id' => 8,
-            'sucursal_id' => 3,
+            'sucursal_id' => 2,
             'stock' => 1,
             'stock_minimo' => 5,
             'stock_maximo' => 10,
-        ]); */
+        ]); 
         
         DB::table('saleproducts')->insert([ // 3
             'stockproduct_id' => 8,
@@ -492,13 +492,13 @@ class StockproductSeeder extends Seeder
             'stock_minimo' => 2,
             'stock_maximo' => 5,
         ]);
-/*         DB::table('stocksucursals')->insert([
+        DB::table('stocksucursals')->insert([
             'stockproduct_id' => 9,
-            'sucursal_id' => 3,
+            'sucursal_id' => 2,
             'stock' => 3,
             'stock_minimo' => 2,
             'stock_maximo' => 5,
-        ]); */
+        ]);
         
         DB::table('saleproducts')->insert([ // 3
             'stockproduct_id' => 9,

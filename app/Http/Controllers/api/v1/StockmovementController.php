@@ -98,12 +98,17 @@ class StockmovementController extends Controller
      */
     public function update(Request $request, Stockmovement $stockmovement)
     {
+
+        
         if ( $stockmovement->estado == 'CONFIRMADO' ) {
             return response()->json(['message' => 'El movimiento ya encuentra confirmado'], 422);
         }
         $is_confirmar = $request->get('data')['meta']['is_confirmar'];
 
         $data = $request->get('data');
+
+        $stockmovement->comments = $data['attributes']['comments'];
+
         $smi_enviados = $data['relationships']['stockmovementitems'];
         $ids_enviados = [];
         try {

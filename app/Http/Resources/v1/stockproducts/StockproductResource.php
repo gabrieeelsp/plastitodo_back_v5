@@ -4,6 +4,8 @@ namespace App\Http\Resources\v1\stockproducts;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+use Carbon\Carbon;
+
 class StockproductResource extends JsonResource
 {
     /**
@@ -22,7 +24,7 @@ class StockproductResource extends JsonResource
                 'costo' => $this->costo,
                 'is_stock_unitario_variable' => $this->is_stock_unitario_variable,
                 'stock_aproximado_unidad' => $this->stock_aproximado_unidad,
-
+                'time_set_costo' => $this->time_set_costo ? Carbon::createFromFormat('Y-m-d H:i:s',  $this->time_set_costo) : null,
                 'image'     => $this->image ? asset($this->image) : null,
             ],
             'relationships' => [

@@ -38,6 +38,7 @@ class CreateUsersTable extends Migration
             $table->string('docnumber')->nullable();
 
             $table->string('direccion')->nullable(); // se una por ejemplo como direccion de entrega
+            $table->string('coments_direccion_client', 100)->nullable();
             $table->string('telefono')->nullable(); 
             
 

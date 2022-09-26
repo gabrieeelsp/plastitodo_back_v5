@@ -17,6 +17,8 @@ class CreatePaymentmethodsTable extends Migration
             $table->id();
             $table->string('name');
             $table->boolean('is_enable')->default(true);
+
+            $table->boolean('requires_confirmation')->default(false);
         });
     }
 

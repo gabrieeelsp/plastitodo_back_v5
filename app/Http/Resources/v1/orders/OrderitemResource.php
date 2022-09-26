@@ -35,6 +35,7 @@ class OrderitemResource extends JsonResource
             ],
             'relationships' => [
                 'saleproduct' => [
+                    'id' => $this->saleproduct->id,
                     'attributes' => [
                         'name' => $this->saleproduct->name,
                         'relacion_venta_stock' => $this->saleproduct->relacion_venta_stock,

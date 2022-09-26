@@ -14,6 +14,10 @@ use App\Models\Saleitem;
 use App\Models\Salecomboitem;
 use App\Models\Salecombosaleproduct;
 
+use App\Models\Ivacondition;
+use App\Models\Comprobante;
+use App\Models\Ivaaliquot;
+
 use App\Models\User;
 
 
@@ -26,6 +30,8 @@ use App\Http\Resources\v1\orders\orderlist\OrderListResource;
 use App\Http\Resources\v1\orders\orderchecksale\OrderCheckSaleResource;
 
 use Carbon\Carbon;
+
+use Afip;
 
 class OrderController extends Controller
 {
@@ -55,6 +61,11 @@ class OrderController extends Controller
             array_push($atr, ['sucursal_id', '=', $request->get('sucursal_id')] );
         }
 
+        if ( $request->has('is_delivery') ) {
+            
+            array_push($atr, ['is_delivery', filter_var($request->get('is_delivery'), FILTER_VALIDATE_BOOL)] );
+        }
+
         $date_from = null;
         $date_to = null;
         if ( $request->has('date_from') ) {
@@ -65,6 +76,7 @@ class OrderController extends Controller
                 $date_to = $request->get('date_from');
             }
         }
+        //return $atr;
 
         // date_from----
         if ( $date_from ){
@@ -79,11 +91,34 @@ class OrderController extends Controller
         // sin date_ftom-------
         $orders = Order::orderBy('id', 'DESC')
             ->where($atr)
-            ->where($atr)
             ->paginate($limit);
         return OrderResource::collection($orders);
 
     }
+
+    public function get_orders_distribucion(Request $request)
+    {
+        //return $request->all();
+
+        $atr = [];
+
+        array_push($atr, ['state', '=', 'EN DISTRIBUCION'] );
+
+        if ( $request->has('sucursal_id') ) {
+            array_push($atr, ['sucursal_id', '=', $request->get('sucursal_id')] );
+        }
+
+        if ( $request->has('deliveryshift_id') ) {
+            array_push($atr, ['deliveryshift_id', '=', $request->get('deliveryshift_id')] );
+        }
+
+        $orders = Order::orderBy('id', 'DESC')
+            ->where($atr)
+            ->get();
+        return OrderResource::collection($orders);
+        
+    }
+
 
     /**
      * Store a newly created resource in storage.
@@ -91,21 +126,10 @@ class OrderController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request) 
-    {
-        $client = User::findOrFail($request->get('client_id'));
 
-        $order = Order::create();
-        $order->client()->associate($client->id);
-        $order->user()->associate(auth()->user()->id);
-        $order->state = "EDITANDO";
-        $order->save();
-
-        return new OrderResource($order);
-    }
-    public function storeback(Request $request)
+    public function store(Request $request)
     {
-        $is_finalizar = $request->get('is_finalizar');
+        $event = $request->get('evento');
         try {
             DB::beginTransaction();
             $order = Order::create();
@@ -121,7 +145,7 @@ class OrderController extends Controller
             }
 
             if($request->has('fecha_entrega_acordada')){
-                $order->fecha_entrega_acordada = Carbon::createFromFormat('d-m-Y', $request->get('fecha_entrega_acordada'))->format('Y-m-d');
+                $order->fecha_entrega_acordada = Carbon::createFromFormat('d-m-Y', $request->get('fecha_entrega_acordada'));
             }
 
             if($request->has('deliveryshift_id')){
@@ -157,7 +181,16 @@ class OrderController extends Controller
                 }
 
                 $orderItem->save();
+
+
+                if ( $order->sucursal ) {
+                    $this->tomar_stock_pedido ( $orderItem->saleproduct, $order->sucursal, $orderItem->cantidad );
+                }
             }
+
+
+
+
 
             $comboitems = $request->get('comboitems');
             foreach($comboitems as $comboitem){
@@ -182,6 +215,10 @@ class OrderController extends Controller
                         $ordercombosaleproduct->ordercomboitem()->associate($ordercomboitem->id);
 
                         $ordercombosaleproduct->save();
+
+                        if ( $order->sucursal ) {
+                            $this->tomar_stock_pedido ( $ordercombosaleproduct->saleproduct, $order->sucursal, $ordercombosaleproduct->cantidad );
+                        }
                     }
                     
                 }
@@ -190,9 +227,9 @@ class OrderController extends Controller
 
                 $ordercomboitem->save();
             }
-
+            
             $order->state = "EDITANDO";
-            if ( $is_finalizar ) {
+            if ( $event == 'FINALIZAR' ) {
                 $order->state = 'FINALIZADO';
             }
             $order->save();
@@ -228,16 +265,67 @@ class OrderController extends Controller
     
     public function update(Request $request, Order $order)
     {
-
+        
         $event = $request->get('evento');
+
+        if (  $event == 'ENVIAR' && $order->state == 'FACTURADO' ) {
+            $order->state = 'EN DISTRIBUCION';
+            $order->save();
+            return new OrderResource(Order::find($order->id));
+        }
+        if (  $event == 'CANCELAR ENVIO' && $order->state == 'EN DISTRIBUCION' ) {
+            $order->state = 'FACTURADO';
+            $order->save();
+            return new OrderResource(Order::find($order->id));
+        }
+        if (  $event == 'SET ENTREGADO' && $order->state == 'EN DISTRIBUCION' ) {
+            $order->state = 'ENTREGADO';
+            $order->save();
+            return new OrderResource(Order::find($order->id));
+        }
+        if (  $event == 'SET ENTREGADO' && $order->state == 'FACTURADO' ) {
+            $order->state = 'ENTREGADO';
+            $order->save();
+            return new OrderResource(Order::find($order->id));
+        }
+        if (  $event == 'CANCELAR ENTREGADO' && $order->state == 'ENTREGADO' ) {
+            if ( $order->is_delivery ) {
+                $order->state = 'EN DISTRIBUCION';
+            }else {
+                $order->state = 'FACTURADO';
+            }
+            
+            $order->save();
+            return new OrderResource(Order::find($order->id));
+        }
+
+        $sucursal_anterior = null;
+        $opcion_sucursal = '';
         
         try {
             DB::beginTransaction();
 
             if ( $request->has('sucursal_id')){
+                if ( $order->sucursal ) {
+                    if ( $order->sucursal->id == $request->get('sucursal_id') ) {
+                        $opcion_sucursal = 'MANTIENE';
+                        $sucursal_anterior = $order->sucursal;
+                    }else {
+                        $opcion_sucursal = 'CAMBIA';
+                        $sucursal_anterior = $order->sucursal;
+                    }
+                }else {
+                    $opcion_sucursal = 'AGREGA';
+                }
                 $order->sucursal()->associate($request->get('sucursal_id'));
             }else {
-                $order->sucursal_id = null;
+                if ( $order->sucursal ) {
+                    $opcion_sucursal = 'ELIMINA';
+                    $sucursal_anterior = $order->sucursal;
+                }else {
+                    $opcion_sucursal = 'NULO';
+                }
+                $order->sucursal()->associate(null);
             }
 
             if($request->has('fecha_entrega_acordada')){
@@ -264,8 +352,23 @@ class OrderController extends Controller
                 $order->ivacondition_id = null;
             }
 
+            $order->save();
 
             if ( ( $event == 'GUARDAR' && $order->state == 'EDITANDO' ) || ( $event == 'FINALIZAR' && $order->state == 'EDITANDO' ) || ( $event == 'FINALIZAR PREPARACION' && $order->state == 'EN PREPARACION' ) ) {
+                
+                if ( $opcion_sucursal == 'MANTIENE' || $opcion_sucursal == 'CAMBIA' || $opcion_sucursal == 'ELIMINA' ) {
+                    //return $opcion_sucursal;
+                    //return $sucursal_anterior;
+                    foreach ( $order->orderitems as $orderitem ) {
+                        //return $orderitem;
+                        $this->devolver_stock_pedido ( $orderitem->saleproduct, $sucursal_anterior, $orderitem->cantidad );
+                    }
+                    foreach ( $order->ordercomboitems as $ordercomboitem ) {
+                        foreach ( $ordercomboitem->ordercombosaleproducts as $ordercombosaleproduct ) {
+                            $this->devolver_stock_pedido ( $ordercombosaleproduct->saleproduct, $sucursal_anterior, $ordercombosaleproduct->cantidad );
+                        }
+                    }
+                }
 
                 $order->orderitems()->delete();
                 $items = $request->get('items');
@@ -283,6 +386,15 @@ class OrderController extends Controller
                         }else {
                             $orderItem->cantidad_total = 0;
                         }
+                    }
+                    //return $order->sucursal;
+                    if ( $order->sucursal ) {
+                        //return 'noooo';
+                        $this->tomar_stock_pedido ( $orderItem->saleproduct, $order->sucursal, $orderItem->cantidad );
+                    }
+
+                    if ( $event == 'FINALIZAR PREPARACION' && $order->state == 'EN PREPARACION' ) {
+                        $orderItem->is_prepared = true;
                     }
 
                     $orderItem->save();
@@ -312,6 +424,15 @@ class OrderController extends Controller
                             $ordercombosaleproduct->saleproduct()->associate($saleproduct_order['saleproduct_id']);
                             $ordercombosaleproduct->ordercomboitem()->associate($ordercomboitem->id);
 
+                            if ( $order->sucursal ) {
+                                //return 'noooo';
+                                $this->tomar_stock_pedido ( $ordercombosaleproduct->saleproduct, $order->sucursal, $ordercombosaleproduct->cantidad );
+                            }
+        
+                            if ( $event == 'FINALIZAR PREPARACION' && $order->state == 'EN PREPARACION' ) {
+                                $ordercombosaleproduct->is_prepared = true;
+                            }
+
                             $ordercombosaleproduct->save();
                         }
                         
@@ -336,11 +457,15 @@ class OrderController extends Controller
                         if ( $orderitem->saleproduct_id == $item['saleproduct_id'] ) {
 
                             if ( $orderitem->is_prepared && !boolval($item['is_prepared']) ) {
+                                //el stock vuelve a pedido
+                                $this->tomar_stock_pedido ( $orderitem->saleproduct, $order->sucursal, $orderitem->cantidad );
                                 //devolver stock
                                 $this->devolver_stock ( $orderitem->saleproduct, $order->sucursal, $orderitem->cantidad );
                             }
 
                             if ( !$orderitem->is_prepared && boolval($item['is_prepared']) ) {
+                                //saco el stock de pedido
+                                $this->devolver_stock_pedido ( $orderitem->saleproduct, $order->sucursal, $orderitem->cantidad );
                                 //tomar stock
                                 $this->tomar_stock ( $orderitem->saleproduct, $order->sucursal, $orderitem->cantidad );
                             }
@@ -365,11 +490,13 @@ class OrderController extends Controller
                                         if ( $ordercombosaleproduct->saleproduct_id == $saleproduct_order['saleproduct_id'] ) {
                                             if ( $ordercombosaleproduct->is_prepared && !boolval($saleproduct_order['is_prepared']) ) {
                                                 //devolver stock
+                                                $this->tomar_stock_pedido ( $ordercombosaleproduct->saleproduct, $order->sucursal, $ordercombosaleproduct->cantidad );
                                                 $this->devolver_stock ( $ordercombosaleproduct->saleproduct, $order->sucursal, $ordercombosaleproduct->cantidad );
                                             }
                 
                                             if ( !$ordercombosaleproduct->is_prepared && boolval($saleproduct_order['is_prepared']) ) {
                                                 //tomar stock
+                                                $this->devolver_stock_pedido ( $ordercombosaleproduct->saleproduct, $order->sucursal, $ordercombosaleproduct->cantidad );
                                                 $this->tomar_stock ( $ordercombosaleproduct->saleproduct, $order->sucursal, $ordercombosaleproduct->cantidad );
                                             }
                                             $ordercombosaleproduct->is_prepared = $saleproduct_order['is_prepared'];
@@ -394,11 +521,13 @@ class OrderController extends Controller
             if ( ( $event == 'INICIAR PREPARACION' && $order->state == 'CONFIRMADO' ) ) {
                 $order->state = 'EN PREPARACION';
             }
-
+            
             if ( ( $event == 'CANCELAR PREPARACION' && $order->state == 'EN PREPARACION' ) ) {
-
+                
                 foreach ( $order->orderitems as $orderitem ) {
                     if ( $orderitem->is_prepared ) {
+                        //el stock vuelve a pedido
+                        $this->tomar_stock_pedido ( $orderitem->saleproduct, $order->sucursal, $orderitem->cantidad );
                         //devolver stock
                         $this->devolver_stock ( $orderitem->saleproduct, $order->sucursal, $orderitem->cantidad );
 
@@ -411,6 +540,7 @@ class OrderController extends Controller
                     foreach ( $ordercomboitem->ordercombosaleproducts as $ordercombosaleproduct ) {
                         if ( $ordercombosaleproduct->is_prepared ) {
                             //devolver stock
+                            $this->tomar_stock_pedido ( $ordercombosaleproduct->saleproduct, $order->sucursal, $ordercombosaleproduct->cantidad );
                             $this->devolver_stock ( $ordercombosaleproduct->saleproduct, $order->sucursal, $ordercombosaleproduct->cantidad );
 
                             $ordercombosaleproduct->is_prepared = false;
@@ -421,16 +551,25 @@ class OrderController extends Controller
                 $order->state = 'CONFIRMADO';
                 
             }
+            
+            if ( ( $event == 'FINALIZAR PREPARACION' && $order->state == 'EN PREPARACION' ) || ( $event == 'GUARDAR' && $order->state == 'FACTURADO' ) || ( $event == 'GUARDAR' && $order->state == 'EN DISTRIBUCION' ) || ( $event == 'GUARDAR' && $order->state == 'PREPARADO' ) ) {
+                if ( $request->has('cant_bultos') ) {                    
+                    $order->cant_bultos = $request->get('cant_bultos');
+                }
+            }
 
             if ( ( $event == 'FINALIZAR PREPARACION' && $order->state == 'EN PREPARACION' ) ) {
                 $order->state = 'PREPARADO';
-                
             }
 
             if ( ( $event == 'EDITAR' && $order->state == 'PREPARADO' ) ) {
-
+                //return $order->orderitems;
                 foreach ( $order->orderitems as $orderitem ) {
+                    
                     if ( $orderitem->is_prepared ) {
+                        
+                        //el stock vuelve a pedido
+                        $this->tomar_stock_pedido ( $orderitem->saleproduct, $order->sucursal, $orderitem->cantidad );
                         //devolver stock
                         $this->devolver_stock ( $orderitem->saleproduct, $order->sucursal, $orderitem->cantidad );
 
@@ -443,6 +582,7 @@ class OrderController extends Controller
                     foreach ( $ordercomboitem->ordercombosaleproducts as $ordercombosaleproduct ) {
                         if ( $ordercombosaleproduct->is_prepared ) {
                             //devolver stock
+                            $this->tomar_stock_pedido ( $ordercombosaleproduct->saleproduct, $order->sucursal, $ordercombosaleproduct->cantidad );
                             $this->devolver_stock ( $ordercombosaleproduct->saleproduct, $order->sucursal, $ordercombosaleproduct->cantidad );
 
                             $ordercombosaleproduct->is_prepared = false;
@@ -455,11 +595,11 @@ class OrderController extends Controller
             }
 
             if ( ( $event == 'FACTURAR' && $order->state == 'PREPARADO' ) ) {
-
+                //return 'seee';
                 $order->save();
 
                 $sale = Sale::create();
-
+                
                 $sale->user()->associate(auth()->user());
                 $sale->sucursal()->associate($order->sucursal_id);
 
@@ -495,6 +635,11 @@ class OrderController extends Controller
                 $order->sale()->associate($sale->id);
 
                 $order->state = 'FACTURADO';
+
+                if ( $order->ivacondition ) {
+                    $comprobante = $this->make_fact($sale, $order->ivacondition->id);
+                     
+                }
                 //return $sale;
             }
 
@@ -510,7 +655,182 @@ class OrderController extends Controller
             return $e;
         }
 
-        return new OrderResource($order);
+        return new OrderResource(Order::find($order->id));
+    }
+
+    private function make_fact( Sale $sale, $ivacondition_id)
+    {  
+
+
+        $ivacondition = Ivacondition::findOrFail($ivacondition_id);
+
+        //$afip = new Afip(array('CUIT' => 20291188568));
+        $afip = new Afip(array('CUIT' => 30714071633));
+
+        $is_pago_efectivo = $sale->hasPaymentCash();
+
+        if(( !$sale->client ) || ($sale->client && !$sale->client->tiene_informacion_fe())){ // Sin cliente registrado
+            if($is_pago_efectivo){
+                if($sale->total >= $ivacondition->modelofact->monto_max_no_id_efectivo) {
+                    return response()->json(['message' => 'No es posible realizar la operación. No existe información fiscal correspondiente.'], 422);
+                }
+            }else{ // no es pago efectivo
+                if($sale->total >= $ivacondition->modelofact->monto_max_no_id_no_efectivo) {
+                    return response()->json(['message' => 'No es posible realizar la operación. No existe información fiscal correspondiente.'], 422);
+                }
+            }
+        }
+        // todo -> verificar si el cliente quiere incluir sus datos
+
+
+        
+
+        if( $sale->client && $sale->client->tiene_informacion_fe() ) {
+            if ( $sale->client->tipo_persona == 'FISICA') {
+                $nombre = $sale->client->name.' '.$sale->client->surname;
+            }else {
+                $nombre = $sale->client->nombre_fact;
+            }
+            $numero_doc = $sale->client->docnumber;
+            $id_afip_doctype = $sale->client->doctype->id_afip;
+            $name_doctype = $sale->client->doctype->name;
+            $direccion = $sale->client->direccion_fact;
+
+        }else {
+            $nombre = "";
+            $numero_doc = "0";
+            $id_afip_doctype = 99;
+            $name_doctype = "Sin identificar";
+            $direccion = "";
+        }
+
+            
+        
+        $numero_comprobante = $afip->ElectronicBilling->getLastVoucher($sale->sucursal->punto_venta_fe, $ivacondition->modelofact->id_afip_factura);
+
+        $numero_comprobante = $numero_comprobante + 1;
+
+        if(!$sale->comprobante){
+            $comprobante = new Comprobante;
+
+            $comprobante->punto_venta = $sale->sucursal->punto_venta_fe;
+            $comprobante->id_afip_tipo = $ivacondition->modelofact->id_afip_factura;
+            $comprobante->comprobanteable_id = $sale->id;
+            $comprobante->comprobanteable_type = 'App\Models\Sale';
+            $comprobante->modelofact_id = $ivacondition->modelofact->id;
+            $comprobante->docnumber = $numero_doc;
+            $comprobante->doctype_id_afip = $id_afip_doctype;
+            $comprobante->doctype_name =  $name_doctype;
+
+
+            $comprobante->nombre_empresa = $sale->sucursal->empresa->name;
+            $comprobante->razon_social_empresa = $sale->sucursal->empresa->razon_social;
+            $comprobante->domicilio_comercial_empresa = $sale->sucursal->empresa->domicilio_comercial;
+            $comprobante->ivacondition_name_empresa = $sale->sucursal->empresa->ivacondition->name;
+            $comprobante->cuit_empresa = $sale->sucursal->empresa->cuit;
+            
+            $comprobante->ing_brutos_empresa = $sale->sucursal->empresa->ing_brutos;
+            $comprobante->fecha_inicio_act_empresa = $sale->sucursal->empresa->fecha_inicio_act;
+
+            $comprobante->condicion_venta = $sale->getCondicionVenta();
+
+            
+            $comprobante->nombre_fact_client = $nombre;
+            $comprobante->direccion_fact_client = $direccion;
+            $comprobante->ivacondition_name_client = $ivacondition->name;
+
+
+        }else {
+            $comprobante = $sale->comprobante;
+        }
+
+        $comprobante->numero = $numero_comprobante;
+        $comprobante->save();
+
+
+        //--- mando a autorizar ---------
+
+        //revisar la fecha, actualmente va a enviar la fecha de la venta
+        //pero puede ser la fecha actual 
+        //ver cuantos dias max pueden pasar antes de enviar a autorizar
+        
+        $ImpNeto = 0;
+        $ImpTotConc = 0;
+        $ImpOpEx = 0;
+        $ivaaliquots_send = array();
+        foreach(Ivaaliquot::all() as $ivaaliquot){
+            $baseImpIva = $sale->getBaseImpIva($ivaaliquot->id);            
+            if ( $baseImpIva ){
+
+                if ($ivaaliquot->id_afip != 1 && $ivaaliquot->id_afip != 2) {
+                    array_push($ivaaliquots_send, array(
+                        'Id' 		=> $ivaaliquot->id_afip, // Id del tipo de IVA (5 para 21%)(ver tipos disponibles) 
+                        'BaseImp' 	=> $baseImpIva, // Base imponible
+                        'Importe' 	=> $sale->getImpIva($ivaaliquot->id) // Importe 
+                    ) );
+                }
+
+                //guardo ImpTotConc para despues
+                if ($ivaaliquot->id_afip == 1 ) { $ImpTotConc = $baseImpIva; }
+
+                //guardo ImpOpEx para despues
+                if ($ivaaliquot->id_afip == 2 ) { $ImpOpEx = $baseImpIva; }
+
+                if (in_array($ivaaliquot->id_afip, [3, 4, 5, 6, 8, 9], false)){
+                    $ImpNeto = $ImpNeto + $baseImpIva;
+                }
+            }
+        }
+
+
+        $ImpIVA = round($sale->total - ($ImpTotConc + $ImpOpEx + $ImpNeto), 2, PHP_ROUND_HALF_UP);
+
+        
+
+        $date = $sale->created_at->format('Ymd');
+
+        
+
+        $data = array(
+            'CantReg' 	=> 1,  // Cantidad de comprobantes a registrar
+            'PtoVta' 	=> $sale->sucursal->punto_venta_fe,  // Punto de venta
+            'CbteTipo' 	=> $ivacondition->modelofact->id_afip_factura,  // Tipo de comprobante (ver tipos disponibles) 
+            'Concepto' 	=> 1,  // Concepto del Comprobante: (1)Productos, (2)Servicios, (3)Productos y Servicios
+            'DocTipo' 	=> $id_afip_doctype, // Tipo de documento del comprador (99 consumidor final, ver tipos disponibles)
+            'DocNro' 	=> $numero_doc,  // Número de documento del comprador (0 consumidor final)
+            'CbteDesde' => $numero_comprobante,  // Número de comprobante o numero del primer comprobante en caso de ser mas de uno
+            'CbteHasta' => $numero_comprobante,  // Número de comprobante o numero del último comprobante en caso de ser mas de uno
+            'CbteFch' 	=> intval($date), // (Opcional) Fecha del comprobante (yyyymmdd) o fecha actual si es nulo
+            'ImpTotal' 	=> floatval($sale->total), // Importe total del comprobante
+
+
+            'ImpTotConc' 	=> $ImpTotConc,   // Importe neto no gravado
+            'ImpNeto' 	=> $ImpNeto, // Importe neto gravado
+            'ImpOpEx' 	=> $ImpOpEx,   // Importe exento de IVA
+            'ImpIVA' 	=> $ImpIVA,  //Importe total de IVA
+            'ImpTrib' 	=> 0,   //Importe total de tributos
+            'MonId' 	=> 'PES', //Tipo de moneda usada en el comprobante (ver tipos disponibles)('PES' para pesos argentinos) 
+            'MonCotiz' 	=> 1,     // Cotización de la moneda usada (1 para pesos argentinos)  
+            'Iva' 		=> $ivaaliquots_send, 
+        );
+
+        //return $data;
+        
+        $res = $afip->ElectronicBilling->CreateVoucher($data, false);
+        try {
+            
+        } catch(\Exception $e) {
+            return new ComprobanteSaleResource($comprobante);
+        }
+
+        $comprobante->cae = $res['CAE'];
+        $comprobante->cae_fch_vto = $res['CAEFchVto'];
+
+        $comprobante->save();
+
+        return $comprobante;
+
+        return new ComprobanteSaleResource($comprobante);
     }
 
     private function tomar_stock ( $saleproduct, $sucursal, $cantidad ) {
@@ -547,6 +867,43 @@ class OrderController extends Controller
         $stockSucursal->save();
     }
 
+    private function tomar_stock_pedido ( $saleproduct, $sucursal, $cantidad ) {
+        $stockSucursal = Stocksucursal::where('stockproduct_id', $saleproduct->stockproduct_id)
+            ->where('sucursal_id', $sucursal->id)
+            ->first();
+        if ( !$stockSucursal ) {
+            $stockSucursal = Stocksucursal::create();
+            $stockSucursal->stock = 0;
+            $stockSucursal->stock_pedido = 0;
+            $stockSucursal->stockproduct()->associate($saleproduct->stockproduct_id);
+            $stockSucursal->sucursal()->associate($sucursal->id);
+            $stockSucursal->save();
+
+        }
+        $stockSucursal->stock_pedido = $stockSucursal->stock_pedido + round($cantidad * $saleproduct->relacion_venta_stock, 6, PHP_ROUND_HALF_UP);
+
+        $stockSucursal->save();
+    }
+
+    private function devolver_stock_pedido ( $saleproduct, $sucursal, $cantidad ) {
+        $stockSucursal = Stocksucursal::where('stockproduct_id', $saleproduct->stockproduct_id)
+            ->where('sucursal_id', $sucursal->id)
+            ->first();
+            //return $stockSucursal;
+        if ( !$stockSucursal ) {
+            $stockSucursal = Stocksucursal::create();
+            $stockSucursal->stock = 0;
+            $stockSucursal->stock_pedido = 0;
+            $stockSucursal->stockproduct()->associate($saleproduct->stockproduct_id);
+            $stockSucursal->sucursal()->associate($sucursal->id);
+            $stockSucursal->save();
+
+        }
+        $stockSucursal->stock_pedido = $stockSucursal->stock_pedido - round($cantidad * $saleproduct->relacion_venta_stock, 6, PHP_ROUND_HALF_UP);
+        //return $stockSucursal;
+        $stockSucursal->save();
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -555,7 +912,28 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
-        //
+        if ( $order->state != 'EDITANDO' ) {
+            return response()->json(['message' => 'El Pedido no se puede eliminar'], 422);
+        }
+        try {
+            if ( $order->sucursal ) {
+                foreach ( $order->orderitems as $orderitem ) {
+                    //return $orderitem;
+                    $this->devolver_stock_pedido ( $orderitem->saleproduct, $order->sucursal, $orderitem->cantidad );
+                }
+                foreach ( $order->ordercomboitems as $ordercomboitem ) {
+                    foreach ( $ordercomboitem->ordercombosaleproducts as $ordercombosaleproduct ) {
+                        $this->devolver_stock_pedido ( $ordercombosaleproduct->saleproduct, $order->sucursal, $ordercombosaleproduct->cantidad );
+                    }
+                }
+            }
+            
+            $order->delete();
+        }catch(\Exception $e){
+            return $e;
+        }
+        
+        return response()->json(['message' => 'Se ha eliminado el item']);
     }
 
     public function get_order_check_sale ( $order_id ) 

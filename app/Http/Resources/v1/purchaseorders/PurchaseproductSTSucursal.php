@@ -21,6 +21,7 @@ class PurchaseproductSTSucursal extends JsonResource
                 'sucursal_id' => $this->sucursal_id,
                 'stock_minimo' => $this->stock_minimo,
                 'stock_maximo' => $this->stock_maximo,
+                'stock_pedido' => $this->stock_pedido,
             ]
         ];
     }

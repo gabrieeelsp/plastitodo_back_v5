@@ -22,7 +22,8 @@ class SaleListResource extends JsonResource
             'attributes' => [
                 //'created_at' => date('d M Y - H:i', $this->created_at->timestamp),
                 'created_at' => $this->created_at,
-                'total' => $this->total
+                'total' => $this->total,
+                'saldo_sale' => $this->saldo_sale,
             ],
             'relationships' => [
                 'client' => $this->client ? [
@@ -52,7 +53,9 @@ class SaleListResource extends JsonResource
                         'cae_fch_vto' => date('d M Y - H:i', Carbon::parse($this->comprobante->cae_fch_vto)->timestamp),
                         'tipo' => $this->comprobante->modelofact->name
                     ] 
-                ] : null,             
+                ] : null,  
+                'payments' => PaymentResource::collection($this->payments),  
+                'refunds' => RefundResource::collection($this->refunds),           
             ]
         ]; 
     }

@@ -29,7 +29,8 @@ class UpdateClientRequest extends FormRequest
             'data.type' => 'required|in:clients',
             'data.attributes' => 'required|array',
             'data.attributes.name' => 'sometimes|max:30|required|string|unique:users,name,'.$this->input('data.id'),   
-            'data.attributes.coments_client' => 'sometimes|max:200',          
+            'data.attributes.coments_client' => 'sometimes|max:200',  
+            'data.attributes.coments_direccion_client' => 'sometimes|max:100',          
         ];
     }
 
@@ -41,6 +42,7 @@ class UpdateClientRequest extends FormRequest
             'data.attributes.name.unique' => 'The name has already been taken.',   
             
             'data.attributes.name.coments_client' => 'The Comment must not be greater than 200 characters.',
+            'data.attributes.name.coments_direccion_client' => 'The Comment must not be greater than 100 characters.',
         ];
     }
 }
