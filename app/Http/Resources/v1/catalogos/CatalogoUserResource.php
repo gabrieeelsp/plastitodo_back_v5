@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources\v1\tags;
+namespace App\Http\Resources\v1\catalogos;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TagListResource extends JsonResource
+class CatalogoUserResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,15 +16,12 @@ class TagListResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'type' => 'tags',
+            'type' => 'users',
             'attributes' => [
-                'name' => $this->name,                
-		        'color' => $this->color,
-                'comments' => $this->comments ? $this->comments :  '',
-            ],
-            'relationships' => [
-                'saleproducts' => null,
-                'clients' => null,
+                'name' => $this->name,
+                'surname' => $this->surname ? [
+                    $this->surname
+                ] : null,                  
             ],
         ]; 
     }

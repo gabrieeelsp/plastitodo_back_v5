@@ -80,4 +80,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Tag::class);
     }
+
+    public function catalogos()
+    {
+        return $this->belongsToMany(Catalogo::class);
+    }
 }

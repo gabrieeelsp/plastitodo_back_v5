@@ -17,9 +17,54 @@ class CajaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $limit = 5;
+        if($request->has('limit')){
+            $limit = $request->get('limit');
+        }
+
+
+        $atr = [];
+
+        $user_id = null;
+        if ( $request->has('user_id')){
+            array_push($atr, ['user_id', '=', $request->get('user_id')] );
+        }
+
+        if ( $request->has('sucursal_id') ) {
+            array_push($atr, ['sucursal_id', '=', $request->get('sucursal_id')] );
+        }
+
+        $date_from = null;
+        $date_to = null;
+        if ( $request->has('date_from') ) {
+            $date_from = $request->get('date_from');
+            if ( $request->has('date_to' )) {
+                $date_to = $request->get('date_to');
+            }else {
+                $date_to = $request->get('date_from');
+            }
+        }
+        //return $date_from;
+
+        // date_from----
+        if ( $date_from ){
+
+            $sales = Caja::orderBy('id', 'DESC')
+                ->where($atr)
+                ->whereBetween('created_at', [$date_from, $date_to . ' 23:59:59'])
+                ->paginate($limit);
+            return CajaResource::collection($sales);
+        }
+
+        // sin date_ftom-------
+        $sales = Caja::orderBy('id', 'DESC')
+            ->where($atr)
+            ->where($atr)
+            ->paginate($limit);
+        return CajaResource::collection($sales);
+
     }
 
     /**

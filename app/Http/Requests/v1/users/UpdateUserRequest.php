@@ -41,7 +41,7 @@ class UpdateUserRequest extends FormRequest
             'data.attributes.name.max' => 'The name field should be less than 100.', 
             'data.attributes.surname.required' => 'The surname field is required.',
             'data.attributes.surname.max' => 'The surname field should be less than 100.', 
-            'data.attributes.email.required' => 'The name field is required.',
+            'data.attributes.email.required' => 'The email field is required.',
             'data.attributes.email.email' => 'The email field is wrong.', 
 
         ];

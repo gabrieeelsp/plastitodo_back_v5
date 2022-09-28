@@ -43,6 +43,8 @@ use App\Http\Controllers\api\v1\StockmovementController;
 
 use App\Http\Controllers\api\v1\TagController;
 
+use App\Http\Controllers\api\v1\CatalogoController;
+
 use App\Http\Controllers\api\v1\ValorController;
 
 use App\Http\Controllers\api\v1\FamiliaController;
@@ -50,6 +52,8 @@ use App\Http\Controllers\api\v1\FamiliaController;
 use App\Http\Controllers\api\v1\OrderController;
 
 use App\Http\Controllers\api\v1\StocktransferController;
+
+use App\Http\Controllers\api\v1\InicioController;
 
 
 
@@ -162,7 +166,7 @@ Route::middleware(['auth:sanctum', 'cors'])->prefix('v1')->group(function () {
     Route::resource('users', UserController::class)->only(['index', 'store', 'show', 'update']);
     Route::put('users/{id}/update_password', [UserController::class, 'update_password']);
 
-    Route::resource('cajas', CajaController::class)->only(['store','show']);
+    Route::resource('cajas', CajaController::class)->only(['index', 'store','show']);
     Route::get('cajas/find/{id}', [CajaController::class, 'find']);
     Route::put('cajas/{id}/cerrar', [CajaController::class, 'cerrar']);
     
@@ -177,4 +181,8 @@ Route::middleware(['auth:sanctum', 'cors'])->prefix('v1')->group(function () {
     Route::get('get_tags_select', [TagController::class, 'get_tags_select']);
     Route::resource('tags', TagController::class)->only(['index', 'update', 'show', 'store']);
 
+    Route::get('get_catalogos_select', [CatalogoController::class, 'get_catalogos_select']);
+    Route::resource('catalogos', CatalogoController::class)->only(['index', 'update', 'show', 'store']);
+
+    Route::get('inicio_data', [InicioController::class, 'inicio_data']);
 });

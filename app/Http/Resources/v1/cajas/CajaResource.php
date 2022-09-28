@@ -3,6 +3,7 @@
 namespace App\Http\Resources\v1\cajas;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Carbon\Carbon;
 
 class CajaResource extends JsonResource
 {
@@ -19,6 +20,7 @@ class CajaResource extends JsonResource
             'type' => 'cajas',
             'attributes' => [
                 'created_at' => $this->created_at,
+                'close_at' => $this->close_at ? Carbon::createFromFormat('Y-m-d H:i:s', $this->close_at) : null,
                 'dinero_inicial' => $this->dinero_inicial,
                 'dinero_final' => $this->dinero_final,
                 'is_open' => $this->is_open
@@ -30,6 +32,7 @@ class CajaResource extends JsonResource
                         'type' => 'users',
                         'attributes' => [
                             'name' => $this->user->name,
+                            'surname' => $this->user->surname,
                         ]
                     ]
                 ],
