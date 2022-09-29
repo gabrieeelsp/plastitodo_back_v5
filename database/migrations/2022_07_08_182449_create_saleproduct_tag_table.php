@@ -18,6 +18,8 @@ class CreateSaleproductTagTable extends Migration
 
             $table->integer('saleproduct_id')->unsigned();
             $table->integer('tag_id')->unsigned();
+
+            $table->boolean('is_enable')->default(true);
         });
     }
 

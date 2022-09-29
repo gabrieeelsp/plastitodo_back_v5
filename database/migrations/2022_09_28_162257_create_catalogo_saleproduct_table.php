@@ -18,6 +18,8 @@ class CreateCatalogoSaleproductTable extends Migration
             
             $table->integer('saleproduct_id')->unsigned();
             $table->integer('catalogo_id')->unsigned();
+
+            $table->boolean('is_enable')->default(true);
         });
     }
 

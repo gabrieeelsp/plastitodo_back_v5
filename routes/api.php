@@ -89,6 +89,7 @@ Route::middleware(['cors'])->prefix('v1')->group(static function () {
     Route::resource('saleproducts', SaleproductController::class)->only(['index', 'show', 'update', 'store']);
     Route::resource('saleproductgroups', SaleproductgroupController::class)->only(['index', 'show', 'update', 'store']);
     Route::put('saleproducts/{id}/update_values', [SaleproductController::class, 'update_values']);
+    Route::put('saleproducts/{id}/update_desc_values', [SaleproductController::class, 'update_desc_values']);
     Route::post('saleproducts/{id}/updload_image', [SaleproductController::class, 'updload_image']);
     Route::put('saleproducts/{id}/remove_image', [SaleproductController::class, 'remove_image']);
     Route::get('get_saleproducts_select', [SaleproductController::class, 'get_saleproducts_select']);

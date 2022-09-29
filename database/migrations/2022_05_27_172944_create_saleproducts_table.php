@@ -37,7 +37,6 @@ class CreateSaleproductsTable extends Migration
 
             $table->string('barcode')->nullable();
 
-
             $table->string('image1')->nullable();
 
             $table->string('image2')->nullable();

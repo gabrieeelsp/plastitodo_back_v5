@@ -16,6 +16,8 @@ use App\Http\Resources\v1\saleproducts\SaleproductVentaResource;
 
 use App\Http\Requests\v1\saleproducts\CreateSaleproductRequest;
 
+use Carbon\Carbon;
+
 class SaleproductController extends Controller
 {
     /**
@@ -28,6 +30,7 @@ class SaleproductController extends Controller
         $searchText = trim($request->get('q'));
         $val = explode(' ', $searchText);
         $atr = [];
+        $atr_date = [];
         foreach($val as $q) {
             array_push($atr, ['name', 'LIKE', '%'.strtolower($q).'%']);
         };
@@ -35,6 +38,29 @@ class SaleproductController extends Controller
         $limit = 5;
         if($request->has('limit')){
             $limit = $request->get('limit');
+        }
+
+        if( $request->has('is_promo') ){
+            $hoy = Carbon::today();
+            if ( filter_var($request->get('is_promo'), FILTER_VALIDATE_BOOL) ) {
+                $items = Saleproduct::orderBy('name', 'ASC')
+                    ->whereDate('fecha_desc_desde', '<=', $hoy)
+                    ->whereDate('fecha_desc_hasta', '>=', $hoy)
+                    ->where($atr)
+                    ->paginate($limit);
+            }else {
+                $items = Saleproduct::orderBy('name', 'ASC')
+                    ->whereDate('fecha_desc_desde', '>', $hoy)
+                    ->orWhereDate('fecha_desc_hasta', '<', $hoy)
+                    ->orWhere('fecha_desc_desde', '=', null)
+                    ->where($atr)
+                    ->paginate($limit);
+            }
+            
+
+            
+            
+            return SaleproductResource::collection($items);
         }
 
         $items = Saleproduct::orderBy('name', 'ASC')
@@ -237,6 +263,72 @@ class SaleproductController extends Controller
             DB::rollback();
             return $e;
         }
+    }
+
+    public function update_desc_values(Request $request, $saleproduct_id)
+    {   
+        //return $request->all();
+        $saleproduct = Saleproduct::findOrFail($saleproduct_id);
+
+        if ( $request->has('data.update_group')) {
+            if ( $request->get('data')['update_group'] == true ) {
+                if ( $saleproduct->saleproductgroup ) {
+                    $saleproducts = Saleproduct::where('saleproductgroup_id', $saleproduct->saleproductgroup_id)->get();
+
+                    $data = $request->get('data');
+                    
+                    try {
+                        DB::beginTransaction();
+
+                        foreach ( $saleproducts as $itemGroup ) {
+                            $itemGroup->desc_min = $data['attributes']['desc_min'];
+                            $itemGroup->desc_may = $data['attributes']['desc_may'];
+
+                            $itemGroup->fecha_desc_hasta = new Carbon(substr($data['attributes']['fecha_desc_desde'], 0, 10));
+                            $itemGroup->fecha_desc_hasta = new Carbon(substr($data['attributes']['fecha_desc_hasta'], 0, 10) .'23:59');
+
+                            $itemGroup->set_precios($itemGroup->stockproduct->costo);
+                            $itemGroup->save();
+                                                        
+                        }
+
+                        DB::commit();
+                    }catch(\Exception $e){
+                        DB::rollback();
+                        return $e;
+                    }
+                    return SaleproductResource::collection($saleproducts);
+                }
+                
+
+                
+            }
+
+        }
+        $data = $request->get('data');
+
+        try {
+            DB::beginTransaction();
+
+            $saleproduct->desc_min = $data['attributes']['desc_min'];
+            $saleproduct->desc_may = $data['attributes']['desc_may'];
+
+            $saleproduct->fecha_desc_desde = new Carbon(substr($data['attributes']['fecha_desc_desde'], 0, 10));
+            $saleproduct->fecha_desc_hasta = new Carbon(substr($data['attributes']['fecha_desc_hasta'], 0, 10) .' 23:59:00');
+            
+            $saleproduct->set_precios($saleproduct->stockproduct->costo);
+               
+            $saleproduct->save();
+
+            DB::commit();
+            
+            
+        }catch(\Exception $e){
+            DB::rollback();
+            return $e;
+        }
+        $saleproduct_saved = Saleproduct::find($saleproduct->id);
+        return new SaleproductResource($saleproduct_saved);
     }
 
     public function update(Request $request, Saleproduct $saleproduct)
