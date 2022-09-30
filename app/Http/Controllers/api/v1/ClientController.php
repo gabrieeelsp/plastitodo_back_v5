@@ -135,6 +135,13 @@ class ClientController extends Controller
                     $user->tags()->attach($tag['id']);
                 }
             }
+
+            if ( $request->has('data.relationships.catalogos')) {
+                $user->catalogos()->detach();
+                foreach ( $request->get('data')['relationships']['catalogos'] as $catalogo ) {
+                    $user->catalogos()->attach($catalogo['id']);
+                }
+            }
             
 
             $user->save();

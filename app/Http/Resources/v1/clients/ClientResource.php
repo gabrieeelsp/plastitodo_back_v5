@@ -66,6 +66,7 @@ class ClientResource extends JsonResource
                 ] : null,
 
                 'tags' => ClientTagResource::collection($this->tags),
+                'catalogos' => ClientCatalogoResource::collection($this->catalogos),
                 
             ]
         ]; 

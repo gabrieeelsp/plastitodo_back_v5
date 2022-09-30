@@ -47,6 +47,11 @@ class Saleproduct extends Model
         return $this->belongsToMany(Tag::class);
     }
 
+    public function catalogos()
+    {
+        return $this->belongsToMany(Catalogo::class);
+    }
+
     public function saleproductgroup() 
     {
         return $this->belongsTo(Saleproductgroup::class);

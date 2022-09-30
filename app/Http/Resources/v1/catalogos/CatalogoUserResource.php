@@ -21,7 +21,8 @@ class CatalogoUserResource extends JsonResource
                 'name' => $this->name,
                 'surname' => $this->surname ? [
                     $this->surname
-                ] : null,                  
+                ] : null,
+                'tipo_persona' => $this->tipo_persona,     
             ],
         ]; 
     }

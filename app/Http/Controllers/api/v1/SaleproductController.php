@@ -371,9 +371,16 @@ class SaleproductController extends Controller
                     $saleproduct->tags()->attach($tag['id']);
                 }
             }
+
+            if ( $request->has('data.relationships.catalogos')) {
+                $saleproduct->catalogos()->detach();
+                foreach ( $request->get('data')['relationships']['catalogos'] as $catalogo ) {
+                    $saleproduct->catalogos()->attach($catalogo['id']);
+                }
+            }
             
 
-            
+            $saleproduct_saved->save();
 
             DB::commit();
             return new SaleproductResource($saleproduct_saved);
