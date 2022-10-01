@@ -21,6 +21,7 @@ class StockmovementListResource extends JsonResource
                 'created_at' => $this->created_at,
                 'estado' => $this->estado,
                 'tipo' => $this->tipo,
+                'comments' => $this->comments ? $this->comments :  '',
             ],
             'relationships' => [
                 'user' => [

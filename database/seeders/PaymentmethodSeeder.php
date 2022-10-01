@@ -19,7 +19,7 @@ class PaymentmethodSeeder extends Seeder
             'name' => "Efectivo"
         ]);
 
-        DB::table('paymentmethods')->insert([
+        /* DB::table('paymentmethods')->insert([
             'name' => "Débito"
         ]);
 
@@ -34,6 +34,6 @@ class PaymentmethodSeeder extends Seeder
 
         DB::table('paymentmethods')->insert([
             'name' => "QR"
-        ]);
+        ]); */
     }
 }

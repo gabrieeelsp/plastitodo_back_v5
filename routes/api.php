@@ -55,6 +55,8 @@ use App\Http\Controllers\api\v1\StocktransferController;
 
 use App\Http\Controllers\api\v1\InicioController;
 
+use App\Http\Controllers\api\v1\StocksucursalController;
+
 
 
 /*
@@ -186,4 +188,6 @@ Route::middleware(['auth:sanctum', 'cors'])->prefix('v1')->group(function () {
     Route::resource('catalogos', CatalogoController::class)->only(['index', 'update', 'show', 'store']);
 
     Route::get('inicio_data', [InicioController::class, 'inicio_data']);
+
+    Route::put('stocksucursals/update_values', [StocksucursalController::class, 'update_values']);
 });

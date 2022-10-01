@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ValorSeeder::class);
         $this->call(DeliveryshiftSeeder::class);
         //$this->call(TagSeeder::class);
-        $this->call(FamiliaSeeder::class);
+        //$this->call(FamiliaSeeder::class);
         $this->call(ModelofactSeeder::class);
         $this->call(IvaconditionSeeder::class);
         $this->call(EmpresaSeeder::class);
@@ -41,12 +41,12 @@ class DatabaseSeeder extends Seeder
 
         //$this->call(CajaSeeder::class);
 
-        $this->call(SaleproductgroupSeeder::class);
+        //$this->call(SaleproductgroupSeeder::class);
 
-        $this->call(StockproductgroupSeeder::class);
-        $this->call(SupplierSeeder::class);
-        $this->call(StockproductSeeder::class);
-        $this->call(ComboSeeder::class);
+        //$this->call(StockproductgroupSeeder::class);
+        //$this->call(SupplierSeeder::class);
+        //$this->call(StockproductSeeder::class);
+        //$this->call(ComboSeeder::class);
 
         
 
@@ -63,7 +63,7 @@ class DatabaseSeeder extends Seeder
                     'stock_maximo' => rand(200, 800),
                 ]);
             }
-        } */
+        } 
     
 
         foreach ( Saleproduct::all() as $saleproduct ) {
@@ -71,7 +71,7 @@ class DatabaseSeeder extends Seeder
             $saleproduct->save();
         }
 
-        /*
+        
         $astor = User::find(3);
         $astor->tags()->attach(1);
         $astor->save(); */

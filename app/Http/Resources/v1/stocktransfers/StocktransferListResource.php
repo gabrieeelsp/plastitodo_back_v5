@@ -3,6 +3,7 @@
 namespace App\Http\Resources\v1\stocktransfers;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Carbon\Carbon;
 
 class StocktransferListResource extends JsonResource
 {
@@ -21,7 +22,7 @@ class StocktransferListResource extends JsonResource
                 'created_at' => $this->created_at,
                 'estado' => $this->estado,
                 'is_recibido' => $this->is_recibido,
-                'recibido_at' => $this->recibido_at,
+                'recibido_at' => $this->recibido_at ? Carbon::createFromFormat('Y-m-d H:i:s',  $this->recibido_at) : null,
             ],
             'relationships' => [
                 'user_origen' => [
