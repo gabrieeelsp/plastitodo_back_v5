@@ -18,6 +18,8 @@ class Saleproduct extends Model
         'barcode',
         'is_enable_web',
         'comments',
+        'precision_min',
+        'precision_may'
     ];
 
     public $timestamps = false;

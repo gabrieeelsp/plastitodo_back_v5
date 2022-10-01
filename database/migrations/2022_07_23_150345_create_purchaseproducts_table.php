@@ -20,6 +20,8 @@ class CreatePurchaseProductsTable extends Migration
             $table->decimal('relacion_compra_stock', 7, 4)->default(1);
             $table->boolean('is_enable')->default(true);
 
+            $table->string('id_rel_supplier')->nullable();
+
             $table->foreignId('stockproduct_id')->nullable()->constrained('stockproducts')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('supplier_id')->nullable()->constrained('suppliers')->onUpdate('cascade')->onDelete('cascade');
         });

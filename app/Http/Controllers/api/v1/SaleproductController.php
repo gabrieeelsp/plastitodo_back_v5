@@ -199,6 +199,8 @@ class SaleproductController extends Controller
                         foreach ( $saleproducts as $itemGroup ) {
                             $itemGroup->porc_min = $data['attributes']['porc_min'];
                             $itemGroup->porc_may = $data['attributes']['porc_may'];
+                            $itemGroup->precision_min = $data['attributes']['precision_min'];
+                            $itemGroup->precision_may = $data['attributes']['precision_may'];
 
                             $itemGroup->set_precios($itemGroup->stockproduct->costo);
                             $itemGroup->save();
@@ -237,6 +239,8 @@ class SaleproductController extends Controller
 
             $saleproduct->porc_min = $data['attributes']['porc_min'];
             $saleproduct->porc_may = $data['attributes']['porc_may'];
+            $saleproduct->precision_min = $data['attributes']['precision_min'];
+            $saleproduct->precision_may = $data['attributes']['precision_may'];
             
             $saleproduct->set_precios($saleproduct->stockproduct->costo);
 

@@ -17,6 +17,8 @@ class CreateDeliveryshiftsTable extends Migration
             $table->id();
             $table->string('name')->nullable();
             $table->string('description')->nullable();
+
+            $table->boolean('is_enable')->default(true);
         });
     }
 
