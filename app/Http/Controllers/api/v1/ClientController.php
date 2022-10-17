@@ -24,6 +24,7 @@ class ClientController extends Controller
      */
     public function index(Request $request)
     {
+        //return $request->all();
         $searchText = trim($request->get('q'));
         $val = explode(' ', $searchText );
 
@@ -35,7 +36,7 @@ class ClientController extends Controller
             //array_push($atr_surname, ['surname', 'LIKE', '%'.strtolower($q).'%'] );
             
         };
-
+        //return $atr_name;
         if ( $request->has('ivacondition_id') ) {
             array_push($atr_name, ['ivacondition_id', '=', $request->get('ivacondition_id')] );
         }
@@ -48,8 +49,12 @@ class ClientController extends Controller
         if($request->has('limit')){
             $limit = $request->get('limit');
         }
+
+
         
         $users = null;
+
+
         //Paginate?
         if ( $request->has('paginate')) {
             $paginate = $request->get('paginate');
@@ -84,6 +89,10 @@ class ClientController extends Controller
         $data = $request->get('data');
 
         $client = User::create(array_merge($request->input('data.attributes'), ['password' => Hash::make('123456')]));
+
+        if ( $client->surname == null ) {
+            $client->surname = '';
+        }
 
         $client->save();
 

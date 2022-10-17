@@ -629,6 +629,8 @@ class OrderController extends Controller
 
                 $client->saldo = $saldo_cliente;
                 $client->save();
+
+                $sale->saldo_sale = $sale->total;
     
                 $sale->save();
 

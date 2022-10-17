@@ -16,7 +16,7 @@ class CreateSaleproductsTable extends Migration
         Schema::create('saleproducts', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->decimal('relacion_venta_stock', 7, 4)->default(1);
+            $table->decimal('relacion_venta_stock', 12, 4)->default(1);
             $table->boolean('is_enable')->default(false);
 
             $table->decimal('porc_min', 6, 2)->default(35);

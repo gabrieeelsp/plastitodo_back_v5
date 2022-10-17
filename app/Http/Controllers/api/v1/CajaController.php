@@ -36,6 +36,11 @@ class CajaController extends Controller
             array_push($atr, ['sucursal_id', '=', $request->get('sucursal_id')] );
         }
 
+        if ( ( auth()->user()->role != null ) && ( auth()->user()->role == 'VENDEDOR' )  ) {
+            array_push($atr, ['user_id', '=', auth()->user()->id]);
+            $limit = 1;
+        }
+
         $date_from = null;
         $date_to = null;
         if ( $request->has('date_from') ) {
