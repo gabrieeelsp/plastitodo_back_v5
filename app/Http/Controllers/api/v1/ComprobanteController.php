@@ -116,7 +116,7 @@ class ComprobanteController extends Controller
         
 
         //$afip = new Afip(array('CUIT' => 20291188568));
-        $afip = new Afip(array('CUIT' => 30714071633));
+        $afip = new Afip(array('CUIT' => 30714071633, 'production' => true));
 
         $resp = $this->verificar_comprobantes($sale->sucursal->punto_venta_fe, $ivacondition->modelofact->id_afip_factura, $afip);
 
@@ -277,6 +277,7 @@ class ComprobanteController extends Controller
         try {
             
         } catch(\Exception $e) {
+            return $e;
             return new ComprobanteSaleResource($comprobante);
         }
 
@@ -302,7 +303,7 @@ class ComprobanteController extends Controller
         $modelofact = $devolution->sale->comprobante->modelofact;
 
         //$afip = new Afip(array('CUIT' => 20291188568));
-        $afip = new Afip(array('CUIT' => 30714071633));
+        $afip = new Afip(array('CUIT' => 30714071633, 'production' => true));
 
         $resp = $this->verificar_comprobantes($devolution->sucursal->punto_venta_fe, $modelofact->id_afip_nc, $afip);
 
@@ -450,7 +451,7 @@ class ComprobanteController extends Controller
         $modelofact = $creditnote->sale->comprobante->modelofact;
 
         //$afip = new Afip(array('CUIT' => 20291188568));
-        $afip = new Afip(array('CUIT' => 30714071633));
+        $afip = new Afip(array('CUIT' => 30714071633, 'production' => true));
 
         $resp = $this->verificar_comprobantes($creditnote->sucursal->punto_venta_fe, $modelofact->id_afip_nc, $afip);
 
@@ -600,7 +601,7 @@ class ComprobanteController extends Controller
         $modelofact = $debitnote->sale->comprobante->modelofact;
 
         //$afip = new Afip(array('CUIT' => 20291188568));
-        $afip = new Afip(array('CUIT' => 30714071633));
+        $afip = new Afip(array('CUIT' => 30714071633, 'production' => true));
 
         $resp = $this->verificar_comprobantes($debitnote->sucursal->punto_venta_fe, $modelofact->id_afip_nd, $afip);
 

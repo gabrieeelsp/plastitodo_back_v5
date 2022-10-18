@@ -667,7 +667,7 @@ class OrderController extends Controller
         $ivacondition = Ivacondition::findOrFail($ivacondition_id);
 
         //$afip = new Afip(array('CUIT' => 20291188568));
-        $afip = new Afip(array('CUIT' => 30714071633));
+        $afip = new Afip(array('CUIT' => 30714071633, 'production' => true));
 
         $is_pago_efectivo = $sale->hasPaymentCash();
 
