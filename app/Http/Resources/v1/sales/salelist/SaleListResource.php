@@ -30,6 +30,8 @@ class SaleListResource extends JsonResource
                     'id' => $this->client->id,
                     'attributes' => [
                         'name' => $this->client->name,
+                        'surname' => $this->client->surname,
+                        'tipo_persona' => $this->client->tipo_persona
                     ] 
                 ] : null,
                 'user' => [

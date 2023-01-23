@@ -388,6 +388,8 @@ class SaleController extends Controller
             $devitem['name'] = $saleitem->saleproduct->name;
             $devitem['precio'] = $saleitem->precio;
             $devitem['is_stock_unitario_variable'] = $saleitem->saleproduct->stockproduct->is_stock_unitario_variable;
+            $devitem['relacion_venta_stock'] = $saleitem->saleproduct->relacion_venta_stock;
+            $devitem['stock_aproximado_unidad'] = $saleitem->saleproduct->stockproduct->stock_aproximado_unidad;
             $devitem['cant_disponible_devolucion'] = $saleitem->get_cant_disponible_devolucion();
             $devitem['cant_total_disponible_devolucion'] = $saleitem->get_cant_total_disponible_devolucion();
             

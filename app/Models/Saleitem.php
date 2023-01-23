@@ -51,7 +51,7 @@ class Saleitem extends Model
     public function get_subtotal() //descontando devoluciones
     {
         if($this->saleproduct->stockproduct->is_stock_unitario_variable){
-            return round($this->precio * $this->cantidad_total, 4, PHP_ROUND_HALF_UP);
+            return round((($this->precio / $this->saleproduct->stockproduct->stock_aproximado_unidad ) / $this->saleproduct->relacion_venta_stock ) * $this->cantidad_total, 4, PHP_ROUND_HALF_UP);
         }else {
             return round($this->precio * $this->cantidad, 4, PHP_ROUND_HALF_UP);
         }

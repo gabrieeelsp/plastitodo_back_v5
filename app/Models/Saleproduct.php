@@ -66,8 +66,12 @@ class Saleproduct extends Model
 
     public function set_precios ( $costo_base )
     {
-
-        $costo = round($costo_base * $this->relacion_venta_stock, 8, PHP_ROUND_HALF_UP);
+        if ( $this->stockproduct->is_stock_unitario_variable ) {
+            $costo = round($costo_base * $this->relacion_venta_stock * $this->stockproduct->stock_aproximado_unidad, 8, PHP_ROUND_HALF_UP);
+        }else {
+            $costo = round($costo_base * $this->relacion_venta_stock, 8, PHP_ROUND_HALF_UP);
+        } 
+        //$costo = round($costo_base * $this->relacion_venta_stock, 8, PHP_ROUND_HALF_UP);
 
         $this->precio_min = round($costo * round(1 + round($this->porc_min / 100, 4, PHP_ROUND_HALF_UP), 8, PHP_ROUND_HALF_UP), $this->precision_min, PHP_ROUND_HALF_UP);
 

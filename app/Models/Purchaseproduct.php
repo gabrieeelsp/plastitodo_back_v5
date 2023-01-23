@@ -13,6 +13,7 @@ class Purchaseproduct extends Model
         'name',
         'relacion_compra_stock',
         'is_enable',
+        'codigo',
     ];
 
     public $timestamps = false;

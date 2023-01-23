@@ -28,6 +28,7 @@ class SaleResource extends JsonResource
                     'id' => $this->client->id,
                     'attributes' => [
                         'name' => $this->client->name,
+                        'surname' => $this->client->surname,
                         'tipo' => $this->client->tipo
                     ],
                     'relationships' => [

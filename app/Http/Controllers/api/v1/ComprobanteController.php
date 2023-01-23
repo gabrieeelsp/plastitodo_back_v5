@@ -91,7 +91,7 @@ class ComprobanteController extends Controller
             if ($voucher_info === null){ //El comprobante no existe
                 $comprobanteEnviado->numero = null;
             }else {
-                $comprobanteEnviado->cae = $voucher_info->codAutorizacion;
+                $comprobanteEnviado->cae = $voucher_info->CodAutorizacion;
                 $comprobanteEnviado->cae_fch_vto = Carbon::parse($voucher_info->FchVto);
             }
             $comprobanteEnviado->save();
@@ -116,7 +116,8 @@ class ComprobanteController extends Controller
         
 
         //$afip = new Afip(array('CUIT' => 20291188568));
-        $afip = new Afip(array('CUIT' => 30714071633, 'production' => true));
+        //$afip = new Afip(array('CUIT' => 30714071633, 'production' => true));
+        $afip = new Afip(array('CUIT' => 30714071633));
 
         $resp = $this->verificar_comprobantes($sale->sucursal->punto_venta_fe, $ivacondition->modelofact->id_afip_factura, $afip);
 
@@ -245,7 +246,6 @@ class ComprobanteController extends Controller
         
 
         $date = $sale->created_at->format('Ymd');
-
         
 
         $data = array(

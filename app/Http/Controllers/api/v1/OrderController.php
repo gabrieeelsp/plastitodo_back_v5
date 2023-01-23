@@ -42,7 +42,7 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = 5;
+        $limit = 20;
         if($request->has('limit')){
             $limit = $request->get('limit');
         }
@@ -267,6 +267,12 @@ class OrderController extends Controller
     {
         
         $event = $request->get('evento');
+
+        if (  $event == 'CANCELAR' && $order->state == 'FACTURADO' ) {
+            $order->state = 'CANCELADO';
+            $order->save();
+            return new OrderResource(Order::find($order->id));
+        }
 
         if (  $event == 'ENVIAR' && $order->state == 'FACTURADO' ) {
             $order->state = 'EN DISTRIBUCION';

@@ -27,6 +27,7 @@ class ComboitemsaleproductResource extends JsonResource
 
                 'is_enable' => $this->pivot ? $this->pivot->is_enable : true,
                 'image1'     => $this->image1 ? asset($this->image1) : null,
+                'barcode'
             ],
             'relationships' => [
                 'stockproduct' => [

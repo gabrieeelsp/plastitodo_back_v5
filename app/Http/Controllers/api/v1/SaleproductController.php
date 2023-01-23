@@ -466,6 +466,8 @@ class SaleproductController extends Controller
                                 'stockproducts.is_stock_unitario_variable as is_stock_unitario_variable',
                                 'stockproducts.stock_aproximado_unidad as stock_aproximado_unidad',
 
+                                'saleproducts.relacion_venta_stock as relacion_venta_stock',
+
                                 'saleproducts.desc_min as desc_min',
                                 'saleproducts.desc_may as desc_may',
                                 'saleproducts.fecha_desc_desde as fecha_desc_desde',
@@ -486,6 +488,7 @@ class SaleproductController extends Controller
                                 'combos.precio_may',
                                 'combos.precio_min as is_stock_unitario_variable',
                                 'combos.precio_min as stock_aproximado_unidad',
+                                'combos.precio_min as relacion_venta_stock',
                                 'combos.precio_min as desc_min',
                                 'combos.precio_may as desc_may',
                                 'combos.precio_min as fecha_desc_desde',

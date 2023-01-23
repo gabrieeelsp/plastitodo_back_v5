@@ -112,6 +112,8 @@ class RefundController extends Controller
                 $saldo_cliente = $saldo_cliente + $saleRefund->valor;
 
                 $saleRefund->saldo = $saldo_cliente;
+
+                $sale->client->saldo = $sale->client->saldo + $saleRefund->valor;
                 $sale->client->save();
             }
 

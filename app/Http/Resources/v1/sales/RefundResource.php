@@ -28,7 +28,7 @@ class RefundResource extends JsonResource
                     'name' => $this->paymentmethod->name,
                     'is_confirmed' => $this->is_confirmed,
                     'requires_confirmation' => $this->paymentmethod->requires_confirmation,
-                ]
+                ],
             ]
         ];
     }

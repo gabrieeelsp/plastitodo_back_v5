@@ -110,18 +110,22 @@ class PaymentController extends Controller
 
             if ( $sale->client ){
                 $saldo_cliente = $sale->client->saldo;
+                
                 $saldo_cliente = $saldo_cliente - $salePayment->valor;
-
+                //return $sale->client->saldo;
                 $salePayment->saldo = $saldo_cliente;
+
+                $sale->client->saldo = $sale->client->saldo - $salePayment->valor;
                 $sale->client->save();
             }
+            //return 'nooooo';
 
             $sale->saldo_sale = $sale->saldo_sale - $data['attributes']['valor'];
             $sale->save();
 
             $salePayment->save();
 
-            usleep(1000000);
+            
             
             DB::commit();
             // all good

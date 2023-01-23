@@ -21,8 +21,8 @@ class PurchaseproductResource extends JsonResource
                 'name' => $this->name,
                 'relacion_compra_stock' => $this->relacion_compra_stock,
                 'is_enable' => $this->is_enable,
-
-                
+                'codigo' => $this->codigo,
+                'rel_precio_codigo' => $this->rel_precio_codigo,
             ],
             'relationships' => [
                 'stockproduct' => [

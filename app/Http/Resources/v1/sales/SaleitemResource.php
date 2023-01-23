@@ -25,6 +25,7 @@ class SaleitemResource extends JsonResource
                 'name' => $this->saleproduct->name,
                 'is_stock_unitario_variable' => $this->saleproduct->stockproduct->is_stock_unitario_variable,
                 'stock_aproximado_unidad' => $this->saleproduct->stockproduct->stock_aproximado_unidad,
+                'relacion_venta_stock' => $this->saleproduct->relacion_venta_stock,
             ],
             'relationships' => [
                 'ivaaliquot' => [
