@@ -57,7 +57,7 @@ use App\Http\Controllers\api\v1\InicioController;
 
 use App\Http\Controllers\api\v1\StocksucursalController;
 
-
+use App\Http\Controllers\api\v1\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -190,4 +190,6 @@ Route::middleware(['auth:sanctum', 'cors'])->prefix('v1')->group(function () {
     Route::get('inicio_data', [InicioController::class, 'inicio_data']);
 
     Route::put('stocksucursals/update_values', [StocksucursalController::class, 'update_values']);
+
+    Route::get('dashboard/ventas_dia', [DashboardController::class, 'ventas_dia']);
 });
